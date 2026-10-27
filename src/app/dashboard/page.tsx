@@ -1,61 +1,97 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { AppHeader } from "@/components/app/AppHeader";
-import { ApplicationLedger } from "@/components/app/ApplicationLedger";
-import { ResumePanel, type StoredResume } from "@/components/app/ResumePanel";
-import { createClient, getSignedInUser } from "@/lib/supabase/server";
+import Link from "next/link";
+import { requireUser } from "@/app/actions/session";
+import { listApplications } from "@/lib/server/data";
+import { ApplicationRow, EmptyState } from "@/components/app/bits";
+import { FindMatchesButton } from "@/components/app/FindMatchesButton";
+import { HoldCard } from "@/components/app/HoldCard";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
+import { aiEnabled } from "@/lib/ai/gemini";
+import type { Gap } from "@/lib/types";
 
-export const metadata: Metadata = { title: "Dashboard | Shortlist" };
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Overview | Shortlist" };
+export const maxDuration = 60;
 
-export default async function DashboardPage() {
-  const user = await getSignedInUser();
-  if (!user) redirect("/signin?next=/dashboard");
+export default async function Overview({ searchParams }: { searchParams: { welcome?: string } }) {
+  const { supabase, userId } = await requireUser();
+  const [{ data: profile }, apps, { data: holds }, { count: matchCount }, { count: jobCount }] = await Promise.all([
+    supabase.from("profiles").select("full_name, match_threshold, target_roles").eq("id", userId).single(),
+    listApplications(supabase, userId, undefined, 200),
+    supabase.from("applications").select("id, hold_questions, jobs(title, companies(name))").eq("user_id", userId).eq("state", "hold").order("created_at", { ascending: false }).limit(6),
+    supabase.from("matches").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    supabase.from("jobs").select("id", { count: "exact", head: true }).eq("status", "open"),
+  ]);
 
-  const supabase = createClient();
-  const { data: files } = await supabase.storage
-    .from("resumes")
-    .list(user.id, { limit: 1, sortBy: { column: "created_at", order: "desc" } });
-  const latest = files?.find((f) => f.id);
-  const resume: StoredResume | null = latest
-    ? {
-        path: `${user.id}/${latest.name}`,
-        name: latest.name.replace(/^\d+-/, ""),
-        size: (latest.metadata?.size as number) ?? 0,
-        updatedAt: latest.created_at ?? null,
-      }
-    : null;
-
-  const firstName = user.name.includes("@") ? "" : user.name.split(" ")[0];
+  const count = (states: string[]) => apps.filter((a) => states.includes(a.state)).length;
+  const stats = [
+    { label: "Ready for review", value: count(["review"]), href: "/dashboard/applications?tab=review" },
+    { label: "Need your answer", value: count(["hold"]), href: "/dashboard/applications?tab=review" },
+    { label: "Applied", value: count(["applied", "approved"]), href: "/dashboard/applications?tab=applied" },
+    { label: "Interviews and offers", value: count(["interview", "offer"]), href: "/dashboard/applications?tab=applied" },
+  ];
+  const ready = apps.filter((a) => a.state === "review").slice(0, 6);
+  const first = (profile?.full_name ?? "").split(" ")[0];
 
   return (
-    <>
-      <AppHeader name={user.name} email={user.email} />
-      <main id="main" className="mx-auto max-w-page px-4 pb-20 pt-10 sm:px-6 lg:pt-14">
-        <h1 className="text-h2 font-extrabold">{firstName ? `Welcome, ${firstName}.` : "Welcome."}</h1>
-        <p className="mt-2 max-w-prose text-muted">
-          {resume
-            ? "Your resume is saved. Matching starts once your profile is confirmed."
-            : "Add your resume to get started. Nothing is sent to employers until you approve it."}
-        </p>
-
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-start">
-          <ResumePanel userId={user.id} initial={resume} />
-
-          <section aria-labelledby="apps-title" className="min-w-0">
-            <h2 id="apps-title" className="text-h3 font-bold">
-              Applications
-            </h2>
-            <p className="mt-1 text-muted">
-              None yet. Once matching is on, jobs land here with a score, and any that need your answer wait for you.
-              This is what the list will look like:
-            </p>
-            <div className="mt-5">
-              <ApplicationLedger />
-            </div>
-          </section>
+    <div className="space-y-10">
+      <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <RevealItem as="h2" className="text-h2 font-extrabold">{first ? `Hello, ${first}.` : "Hello."}</RevealItem>
+          <RevealItem as="p" className="mt-2 max-w-prose text-muted">
+            {jobCount ? `We're watching ${jobCount.toLocaleString()} open jobs on company career pages. ` : ""}
+            You'll see jobs at {profile?.match_threshold ?? 80}% match or above for {profile?.target_roles?.slice(0, 3).join(", ") || "your roles"}.
+          </RevealItem>
         </div>
-      </main>
-    </>
+        <RevealItem>
+          <FindMatchesButton autoRun={Boolean(searchParams.welcome) && !matchCount} />
+        </RevealItem>
+      </Reveal>
+
+      {!aiEnabled() && (
+        <p className="rounded-control bg-hold-soft px-4 py-3 text-sm">Scoring is using basic keyword matching until the Gemini key is working.</p>
+      )}
+
+      <Reveal as="ul" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {stats.map((s) => (
+          <RevealItem as="li" key={s.label}>
+            <Link href={s.href} className="block rounded-panel border border-rule bg-sheet p-4 transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lift">
+              <p className="text-h2 font-extrabold tabular-nums">{s.value}</p>
+              <p className="text-sm text-muted">{s.label}</p>
+            </Link>
+          </RevealItem>
+        ))}
+      </Reveal>
+
+      <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
+        <section aria-labelledby="holds-title">
+          <h2 id="holds-title" className="text-h3 font-bold">Needs your answer</h2>
+          <p className="mt-1 text-sm text-muted">These fit you well but ask for something that isn't on your profile.</p>
+          <ul className="mt-4 space-y-3">
+            {(holds ?? []).length ? (
+              (holds ?? []).map((h) => {
+                const j = h.jobs as unknown as { title: string; companies: { name: string } | null };
+                return <HoldCard key={h.id} id={h.id} title={j.title} company={j.companies?.name ?? ""} questions={(h.hold_questions as Gap[]) ?? []} />;
+              })
+            ) : (
+              <EmptyState title="Nothing waiting" body="When a good job asks for a skill you haven't listed, the question shows up here." />
+            )}
+          </ul>
+        </section>
+
+        <section aria-labelledby="ready-title">
+          <div className="flex items-baseline justify-between">
+            <h2 id="ready-title" className="text-h3 font-bold">Ready for review</h2>
+            <Link href="/dashboard/applications" className="text-sm font-semibold underline-offset-4 hover:underline">See all</Link>
+          </div>
+          <ul className="mt-4 space-y-3">
+            {ready.length ? (
+              ready.map((a, i) => <ApplicationRow key={a.id} a={a} index={i} />)
+            ) : (
+              <EmptyState title="No jobs to review yet" body="Run a search now, or wait for tomorrow's daily check. New matches appear here." />
+            )}
+          </ul>
+        </section>
+      </div>
+    </div>
   );
 }

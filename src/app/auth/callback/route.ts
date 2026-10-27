@@ -9,8 +9,17 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      // New people go to onboarding first; returning people go where they were headed.
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed_at")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      const target = profile?.onboarding_completed_at ? next : "/onboarding";
+      return NextResponse.redirect(`${origin}${target}`);
+    }
   }
 
   const message = searchParams.get("error_description") ?? "That sign-in link didn't work. Try signing in again.";
