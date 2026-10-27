@@ -53,6 +53,16 @@ function remoteOpenTo(job: JobRow, p: Profile) {
   return false;
 }
 
+const INDIA = /bengaluru|bangalore|hyderabad|mumbai|pune|chennai|gurgaon|gurugram|noida|delhi|kolkata|ahmedabad|kochi|jaipur|coimbatore/;
+
+function nearby(job: JobRow, p: Profile) {
+  const l = (job.location ?? "").toLowerCase();
+  if (p.city && l.includes(p.city.toLowerCase())) return 25;
+  if ((p.preferred_locations ?? []).some((x) => x && l.includes(x.toLowerCase()))) return 25;
+  if (p.country && (l.includes(p.country.toLowerCase()) || (p.country.toLowerCase() === "india" && INDIA.test(l)))) return 15;
+  return job.remote && remoteOpenTo(job, p) ? 10 : 0;
+}
+
 function locationOk(job: JobRow, p: Profile) {
   const modes = p.work_modes ?? [];
   if (job.remote && (modes.length === 0 || modes.includes("remote"))) return remoteOpenTo(job, p);
@@ -165,8 +175,9 @@ export async function matchUser(db: SupabaseClient, userId: string) {
     .filter((j) => !excluded.includes((j.companies?.name ?? "").toLowerCase()))
     .filter((j) => titleMatches(j.title, p.target_roles))
     .filter((j) => locationOk(j, p))
-    .map((j) => ({ job: j, pre: basicScore(j, r, p) }))
-    .sort((a, b) => b.pre.score - a.pre.score)
+    .map((j) => ({ job: j, pre: basicScore(j, r, p), near: nearby(j, p) }))
+    // Spend the AI budget on jobs in the user's own city or country first.
+    .sort((a, b) => b.pre.score + b.near - (a.pre.score + a.near))
     .slice(0, 40);
 
   const useAi = aiEnabled();
