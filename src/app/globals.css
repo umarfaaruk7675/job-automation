@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: 242 244 241; /* #f2f4f1 */
+  --sheet: 255 255 255; /* #ffffff */
+  --ink: 22 33 29; /* #16211d */
+  --muted: 86 101 94; /* #56655e */
+  --rule: 214 221 216; /* #d6ddd8 */
+  --sent: 29 115 73; /* #1d7349 */
+  --sent-soft: 226 240 231; /* #e2f0e7 */
+  --hold: 140 82 0; /* #8c5200 */
+  --hold-soft: 251 239 217; /* #fbefd9 */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-paper text-ink font-sans text-body antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--ink));
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
