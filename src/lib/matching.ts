@@ -35,13 +35,27 @@ function titleMatches(title: string, roles: string[]) {
     const rw = words(r).filter((w) => !STOP.has(w));
     if (!rw.length) return false;
     const hits = rw.filter((w) => t.has(w)).length;
-    return hits / rw.length >= 0.5;
+    // Two-word roles need both words ("Data Analyst" shouldn't match "Data Engineer").
+    return hits >= Math.max(1, Math.ceil(rw.length * 0.67));
   });
+}
+
+const ANYWHERE = /anywhere|worldwide|global|international|^\s*remote\s*$/i;
+
+/** A remote job limited to other countries ("Remote, UK only") isn't open to this user. */
+function remoteOpenTo(job: JobRow, p: Profile) {
+  const loc = (job.location ?? "").trim();
+  if (!loc || ANYWHERE.test(loc)) return true;
+  const mine = [p.city, p.country, ...(p.preferred_locations ?? [])].filter(Boolean).map((s) => s!.toLowerCase());
+  const l = loc.toLowerCase();
+  if (mine.some((m) => l.includes(m))) return true;
+  if (/(^|\W)(apac|asia)(\W|$)/.test(l) && (p.country ?? "").toLowerCase() === "india") return true;
+  return false;
 }
 
 function locationOk(job: JobRow, p: Profile) {
   const modes = p.work_modes ?? [];
-  if (job.remote && (modes.length === 0 || modes.includes("remote"))) return true;
+  if (job.remote && (modes.length === 0 || modes.includes("remote"))) return remoteOpenTo(job, p);
   if (modes.length === 1 && modes[0] === "remote") return job.remote;
   const wanted = [...(p.preferred_locations ?? []), p.city ?? "", p.country ?? ""].map((s) => s.toLowerCase()).filter(Boolean);
   if (!wanted.length || p.willing_to_relocate) return true;
