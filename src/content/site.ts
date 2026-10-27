@@ -20,7 +20,7 @@ export const site = {
     note: "Free while in beta. No card needed.",
   },
   features: [
-    { icon: "radar", title: "Fresh jobs, every day", body: "Straight from company career pages on Greenhouse, Lever and Ashby. Only roles posted in the last 7 days, newest first." },
+    { icon: "radar", title: "Fresh jobs, every day", body: "From company career pages on Greenhouse, Lever, Ashby, Workable and SmartRecruiters, plus job boards like Remotive, Himalayas and Jobicy. Newest first." },
     { icon: "gauge", title: "A match score with reasons", body: "Every job gets a score out of 100 and plain-English reasons, so you know why it was picked." },
     { icon: "file", title: "Truthful resume tailoring", body: "Your resume is reworded for each job using only facts you've confirmed. No invented skills, ever." },
     { icon: "message", title: "It asks instead of guessing", body: "When a great job asks for something not on your profile, you get a yes/no question, not a made-up answer." },
@@ -34,7 +34,7 @@ export const site = {
   ],
   faq: [
     { q: "Does Shortlist apply without asking me?", a: "No. Every application waits for your approval. Autopilot only becomes available after you've approved 10 applications yourself, and you can turn it off at any time." },
-    { q: "Where do the jobs come from?", a: "From companies' own job boards on Greenhouse, Lever and Ashby, checked every day. You can also follow any company by pasting its careers link." },
+    { q: "Where do the jobs come from?", a: "From companies' own career pages (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee) and public job boards such as Remotive, Himalayas, Jobicy and The Muse, refreshed every day. You can also follow any company by pasting its careers link." },
     { q: "Will it add skills I don't have?", a: "No. Tailoring only rewords and reorders what's already in your confirmed profile. If a job needs something you haven't listed, we ask you first." },
     { q: "Do you use LinkedIn or Indeed?", a: "No. Their terms forbid bots, and automated applications there can get your account restricted. We work with company career pages instead." },
     { q: "What does it cost?", a: "It's free while in beta. If paid plans are added later, prices will be on this page and you'll be able to cancel any time." },

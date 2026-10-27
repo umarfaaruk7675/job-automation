@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "./session";
-import { matchUser } from "@/lib/matching";
+import { matchUser, scoreOne } from "@/lib/matching";
 import { tailorResume } from "@/lib/tailor";
 import { aiEnabled } from "@/lib/ai/gemini";
 import { detectBoard, fetchBoard } from "@/lib/jobs/ats";
@@ -180,4 +180,12 @@ export async function reviewMatch(matchId: number) {
   await logEvent(supabase, userId, app.id, app.state, "You added this job to review");
   refresh();
   return { ok: true as const, applicationId: app.id };
+}
+
+export async function scoreJob(jobId: number) {
+  const { supabase, userId } = await requireUser();
+  const match = await scoreOne(supabase, userId, jobId);
+  if (!match) return { ok: false as const };
+  revalidatePath("/dashboard/matches");
+  return { ok: true as const, matchId: match.id, score: match.score, reasons: match.reasons };
 }

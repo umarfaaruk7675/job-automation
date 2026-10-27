@@ -36,14 +36,16 @@ export async function GET(request: NextRequest) {
 
   const started = Date.now();
   await seedCompanies(db);
-  const discovery = await discoverJobs(db, { budgetMs: 30_000 });
-
   const { data: users } = await db
     .from("profiles")
-    .select("id, email, digest_emails")
+    .select("id, email, digest_emails, target_roles")
     .not("onboarding_completed_at", "is", null)
     .order("updated_at", { ascending: true })
     .limit(50);
+  // Role keywords for search-style sources like Adzuna.
+  const queries = Array.from(new Set((users ?? []).flatMap((u) => (u.target_roles as string[] | null) ?? [])));
+  const discovery = await discoverJobs(db, { budgetMs: 30_000, queries });
+  if (request.nextUrl.searchParams.get("discover")) return NextResponse.json({ discovery, ms: Date.now() - started });
 
   let matched = 0;
   let emailed = 0;

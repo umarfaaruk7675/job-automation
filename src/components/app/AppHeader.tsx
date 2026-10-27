@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { m } from "framer-motion";
-import { Briefcase, LayoutDashboard, LogOut, Settings, Sparkles, UserRound } from "lucide-react";
+import { Briefcase, LayoutDashboard, LogOut, Search, Settings, Sparkles, UserRound } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const NAV = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/applications", label: "Applications", icon: Briefcase },
-  { href: "/dashboard/matches", label: "Matches", icon: Sparkles },
-  { href: "/dashboard/profile", label: "Profile", icon: UserRound },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", label: "Overview", short: "Home", icon: LayoutDashboard },
+  { href: "/dashboard/jobs", label: "Live jobs", short: "Jobs", icon: Search },
+  { href: "/dashboard/matches", label: "Matches", short: "Matches", icon: Sparkles },
+  { href: "/dashboard/applications", label: "Applications", short: "Applied", icon: Briefcase },
+  { href: "/dashboard/profile", label: "Profile", short: "Profile", icon: UserRound },
+  { href: "/dashboard/settings", label: "Settings", short: "Settings", icon: Settings },
 ];
 
 export function AppHeader({ name, email, showNav = false }: { name: string; email: string; showNav?: boolean }) {
@@ -33,7 +34,7 @@ export function AppHeader({ name, email, showNav = false }: { name: string; emai
           {showNav && (
             <nav aria-label="App" className="hidden items-center gap-1 lg:flex">
               {NAV.map((n) => (
-                <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}
+                <Link key={n.href} href={n.href} prefetch aria-current={active(n.href) ? "page" : undefined}
                   className={cn("relative rounded-control px-3 py-2 text-sm font-semibold transition-colors", active(n.href) ? "text-ink" : "text-muted hover:text-ink")}>
                   {active(n.href) && <m.span layoutId="nav-pill" className="absolute inset-0 rounded-control bg-sheet shadow-[0_0_0_1px_rgb(var(--rule))]" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                   <span className="relative">{n.label}</span>
@@ -59,13 +60,13 @@ export function AppHeader({ name, email, showNav = false }: { name: string; emai
 
       {showNav && (
         <nav aria-label="App" className="fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
-          <ul className="mx-auto grid max-w-md grid-cols-5">
+          <ul className="mx-auto grid max-w-lg grid-cols-6">
             {NAV.map((n) => (
               <li key={n.href}>
                 <Link href={n.href} aria-current={active(n.href) ? "page" : undefined}
-                  className={cn("flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold", active(n.href) ? "text-ink" : "text-muted")}>
+                  className={cn("flex flex-col items-center gap-0.5 py-2 text-[10.5px] font-semibold", active(n.href) ? "text-ink" : "text-muted")}>
                   <n.icon className="h-5 w-5" aria-hidden />
-                  {n.label}
+                  {n.short}
                 </Link>
               </li>
             ))}

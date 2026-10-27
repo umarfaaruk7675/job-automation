@@ -206,3 +206,23 @@ export async function matchUser(db: SupabaseClient, userId: string) {
   }
   return { scored: results.length, created: 0 };
 }
+
+/** Scores a single job the user picked from the Jobs page and saves the match. */
+export async function scoreOne(db: SupabaseClient, userId: string, jobId: number) {
+  const [{ data: profile }, { data: resume }, { data: job }] = await Promise.all([
+    db.from("profiles").select("*").eq("id", userId).single(),
+    db.from("resume_profiles").select("*").eq("user_id", userId).single(),
+    db.from("jobs").select("id, title, location, remote, description, posted_at, first_seen_at, companies(name)").eq("id", jobId).single(),
+  ]);
+  if (!profile || !resume || !job) return null;
+  const p = profile as Profile;
+  const r = resume as unknown as ResumeData;
+  const j = job as unknown as JobRow;
+  const s = (aiEnabled() ? await aiScore(j, r, p) : null) ?? basicScore(j, r, p);
+  const { data } = await db
+    .from("matches")
+    .upsert({ user_id: userId, job_id: jobId, score: s.eligible ? s.score : Math.min(s.score, 40), reasons: s.reasons, gaps: s.gaps, method: s.method }, { onConflict: "user_id,job_id" })
+    .select("id, score, reasons")
+    .single();
+  return data as { id: number; score: number; reasons: string[] } | null;
+}
