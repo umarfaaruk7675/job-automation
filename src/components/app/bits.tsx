@@ -14,7 +14,7 @@ export function StateChip({ state }: { state: string }) {
         "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold",
         tone === "sent" && "bg-sent-soft text-sent",
         tone === "hold" && "bg-hold-soft text-hold",
-        tone === "ink" && "bg-ink text-paper",
+        tone === "ink" && "bg-primary/15 text-[rgb(147,197,253)]",
         tone === "neutral" && "bg-paper text-muted",
       )}
     >
@@ -36,7 +36,7 @@ export function ScoreRing({ score, size = 52 }: { score: number; size?: number }
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={score >= 80 ? "rgb(var(--sent))" : "rgb(var(--ink))"}
+          stroke={score >= 80 ? "rgb(var(--sent))" : "rgb(var(--primary))"}
           strokeWidth="5"
           strokeLinecap="round"
           strokeDasharray={c}

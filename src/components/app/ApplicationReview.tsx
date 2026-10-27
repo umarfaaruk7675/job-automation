@@ -141,7 +141,7 @@ export function ApplicationReview(props: Props) {
                   <p className="text-sm font-semibold text-muted">Skills, most relevant first</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {tailored.skills.map((s, i) => (
-                      <span key={s} className={cn("rounded-full px-2.5 py-1 text-sm", i < 6 ? "bg-ink text-paper" : "bg-paper")}>{s}</span>
+                      <span key={s} className={cn("rounded-full px-2.5 py-1 text-sm", i < 6 ? "bg-primary text-white" : "bg-paper")}>{s}</span>
                     ))}
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export function ApplicationReview(props: Props) {
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {(["interview", "offer", "rejected"] as const).map((s) => (
                   <button key={s} type="button" disabled={busy} onClick={() => move(s)}
-                    className={cn("rounded-control border px-2 py-2 text-sm font-semibold transition-colors", state === s ? "border-ink bg-ink text-paper" : "border-rule hover:border-ink")}>
+                    className={cn("rounded-control border px-2 py-2 text-sm font-semibold transition-colors", state === s ? "border-ink bg-primary text-white" : "border-rule hover:border-ink")}>
                     {s === "interview" ? "Interview" : s === "offer" ? "Offer" : "No luck"}
                   </button>
                 ))}
@@ -212,7 +212,7 @@ export function ApplicationReview(props: Props) {
           <ol className="mt-3 space-y-3 border-l border-rule pl-4">
             {events.map((e) => (
               <li key={e.id} className="relative">
-                <span className="absolute -left-[1.3rem] top-1.5 h-2 w-2 rounded-full bg-ink" aria-hidden />
+                <span className="absolute -left-[1.3rem] top-1.5 h-2 w-2 rounded-full bg-primary" aria-hidden />
                 <p className="text-sm">{e.detail ?? e.state}</p>
                 <p className="text-xs text-muted">{timeAgo(e.created_at)}</p>
               </li>

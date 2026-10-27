@@ -4,9 +4,9 @@ import { MotionProvider } from "@/components/motion/MotionProvider";
 import "./globals.css";
 
 const sans = localFont({
-  src: "./fonts/schibsted-grotesk.woff2",
+  src: "./fonts/inter.woff2",
   variable: "--font-sans",
-  weight: "400 900",
+  weight: "100 900",
   display: "swap",
 });
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f2f4f1",
+  themeColor: "#0b1120",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

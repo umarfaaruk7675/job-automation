@@ -73,8 +73,8 @@ export function Select({
   const id = useId();
   return (
     <Field label={label} hint={hint} className={className} htmlFor={id}>
-      <select id={id} {...props} className={cn(control, "appearance-none bg-[length:16px] bg-[right_0.75rem_center] bg-no-repeat pr-9")}
-        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356655e' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")" }}
+      <select id={id} {...props} className={cn(control, "appearance-none pr-9")}
+        style={{ backgroundSize: "16px", backgroundPosition: "right 0.75rem center", backgroundRepeat: "no-repeat", backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E\")" }}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -117,7 +117,7 @@ export function ChoiceGroup<T extends string>({
               onClick={() => onChange(multiple ? (on ? value.filter((v) => v !== o.value) : [...value, o.value]) : [o.value])}
               className={cn(
                 "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
-                on ? "border-ink bg-ink text-paper" : "border-rule bg-sheet hover:border-ink",
+                on ? "border-ink bg-primary text-white" : "border-rule bg-sheet hover:border-ink",
               )}
             >
               {o.label}
@@ -260,7 +260,7 @@ export function Button({
       disabled={props.disabled || busy}
       className={cn(
         "relative inline-flex h-11 items-center justify-center gap-2 rounded-control px-5 font-semibold transition-[background-color,border-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60",
-        variant === "primary" && "bg-ink text-paper hover:bg-sent",
+        variant === "primary" && "bg-primary text-white hover:bg-primary-hover",
         variant === "secondary" && "border border-rule bg-sheet hover:border-ink",
         variant === "ghost" && "text-muted hover:bg-paper hover:text-ink",
         className,

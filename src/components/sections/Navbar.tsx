@@ -29,7 +29,7 @@ export function Navbar() {
     >
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-control focus:bg-ink focus:px-3 focus:py-2 focus:text-paper"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-control focus:bg-primary focus:px-3 focus:py-2 focus:text-white"
       >
         Skip to content
       </a>
@@ -53,7 +53,7 @@ export function Navbar() {
             href={cta.href}
             whileHover={{ y: -1 }}
             whileTap={{ scale: 0.97 }}
-            className="rounded-control bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-sent"
+            className="rounded-control bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
           >
             {cta.label}
           </m.a>
@@ -107,7 +107,7 @@ export function Navbar() {
                 <a
                   href={cta.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-control bg-ink px-4 py-3 text-center font-semibold text-paper"
+                  className="block rounded-control bg-primary px-4 py-3 text-center font-semibold text-white"
                 >
                   {cta.label}
                 </a>

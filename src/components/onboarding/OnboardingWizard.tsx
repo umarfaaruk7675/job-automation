@@ -177,7 +177,7 @@ function Progress({ step, onJump }: { step: number; onJump: (i: number) => void 
         <p className="text-sm text-muted">Saved as you go</p>
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-rule/70">
-        <m.div className="h-full rounded-full bg-ink" initial={false} animate={{ width: `${Math.max(4, pct)}%` }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} />
+        <m.div className="h-full rounded-full bg-primary" initial={false} animate={{ width: `${Math.max(4, pct)}%` }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} />
       </div>
       <ol className="mt-3 hidden gap-1 sm:flex">
         {STEPS.map((s, i) => (
@@ -326,7 +326,7 @@ function Working({ phase }: { phase: "uploading" | "reading" }) {
         ))}
       </ul>
       <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-paper">
-        <m.div className="h-full w-1/3 rounded-full bg-ink" animate={{ x: ["-100%", "300%"] }} transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }} />
+        <m.div className="h-full w-1/3 rounded-full bg-primary" animate={{ x: ["-100%", "300%"] }} transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }} />
       </div>
     </div>
   );
@@ -383,7 +383,7 @@ function ExperienceStep({ p, set, r, setR }: { p: Profile; set: (x: Partial<Prof
                 <TextInput label="Start" placeholder="2023-06" value={e.start ?? ""} onChange={(ev) => update(i, { start: ev.target.value })} />
                 <TextInput label="End" placeholder="2024-12" value={e.current ? "" : e.end ?? ""} disabled={e.current} onChange={(ev) => update(i, { end: ev.target.value })} />
                 <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">
-                  <input type="checkbox" checked={Boolean(e.current)} onChange={(ev) => update(i, { current: ev.target.checked })} className="h-4 w-4 accent-[rgb(var(--ink))]" />
+                  <input type="checkbox" checked={Boolean(e.current)} onChange={(ev) => update(i, { current: ev.target.checked })} className="h-4 w-4 accent-[rgb(var(--primary))]" />
                   I work here now
                 </label>
                 <TextArea className="sm:col-span-2" label="What you did" hint="One achievement per line. Keep numbers exact."
@@ -509,7 +509,7 @@ function MatchingStep({ p, set }: { p: Profile; set: (x: Partial<Profile>) => vo
             {p.match_threshold}%
           </m.span>
         </div>
-        <input id="threshold" type="range" min={50} max={95} step={5} value={p.match_threshold} onChange={(e) => set({ match_threshold: Number(e.target.value) })} className="mt-3 w-full accent-[rgb(var(--ink))]" />
+        <input id="threshold" type="range" min={50} max={95} step={5} value={p.match_threshold} onChange={(e) => set({ match_threshold: Number(e.target.value) })} className="mt-3 w-full accent-[rgb(var(--primary))]" />
         <p className="mt-2 text-sm text-muted">80% is a good start. Lower it to see more jobs; raise it to see fewer, closer fits.</p>
       </div>
 
@@ -518,7 +518,7 @@ function MatchingStep({ p, set }: { p: Profile; set: (x: Partial<Profile>) => vo
           <label htmlFor="daily" className="font-semibold">Most new jobs per day</label>
           <span className="text-h3 font-extrabold tabular-nums">{p.daily_limit}</span>
         </div>
-        <input id="daily" type="range" min={1} max={25} value={p.daily_limit} onChange={(e) => set({ daily_limit: Number(e.target.value) })} className="mt-3 w-full accent-[rgb(var(--ink))]" />
+        <input id="daily" type="range" min={1} max={25} value={p.daily_limit} onChange={(e) => set({ daily_limit: Number(e.target.value) })} className="mt-3 w-full accent-[rgb(var(--primary))]" />
         <p className="mt-2 text-sm text-muted">Fewer, better applications get more replies than many generic ones.</p>
       </div>
 

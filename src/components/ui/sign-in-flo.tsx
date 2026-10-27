@@ -138,7 +138,7 @@ function FloatingParticles() {
       for (const d of dots) {
         d.x = (d.x + d.vx + w()) % w();
         d.y = (d.y + d.vy + h()) % h();
-        ctx.fillStyle = `rgba(29, 115, 73, ${d.a})`;
+        ctx.fillStyle = `rgba(59, 130, 246, ${d.a})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         ctx.fill();
@@ -447,7 +447,7 @@ export function Component({
               disabled={submitting}
               whileHover={submitting ? undefined : { y: -1 }}
               whileTap={submitting ? undefined : { scale: 0.98 }}
-              className="group relative h-12 w-full overflow-hidden rounded-control bg-ink font-semibold text-paper transition-colors hover:bg-sent disabled:cursor-not-allowed disabled:opacity-60"
+              className="group relative h-12 w-full overflow-hidden rounded-control bg-primary font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               <span className={cn("transition-opacity", submitting && "opacity-0")}>{copy.submit}</span>
               {submitting && (

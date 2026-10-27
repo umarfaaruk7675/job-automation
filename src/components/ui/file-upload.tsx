@@ -200,7 +200,7 @@ export default function FileUpload({ onReady, maxBytes = 5 * 1024 * 1024, classN
                     </p>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-paper">
                       <m.div
-                        className="h-full rounded-full bg-ink"
+                        className="h-full rounded-full bg-primary"
                         initial={{ width: "8%" }}
                         animate={{ width: "100%" }}
                         transition={{ duration: 0.6, ease: "easeOut" }}

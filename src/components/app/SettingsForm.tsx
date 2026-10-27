@@ -35,7 +35,7 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
           <label htmlFor="th" className="font-semibold">Lowest match to send to review</label>
           <span className="text-h3 font-extrabold tabular-nums">{threshold}%</span>
         </div>
-        <input id="th" type="range" min={50} max={95} step={5} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="mt-3 w-full accent-[rgb(var(--ink))]" />
+        <input id="th" type="range" min={50} max={95} step={5} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="mt-3 w-full accent-[rgb(var(--primary))]" />
       </section>
 
       <section className="rounded-panel border border-rule bg-sheet p-5">
@@ -43,7 +43,7 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
           <label htmlFor="dl" className="font-semibold">Most new jobs per day</label>
           <span className="text-h3 font-extrabold tabular-nums">{daily}</span>
         </div>
-        <input id="dl" type="range" min={1} max={25} value={daily} onChange={(e) => setDaily(Number(e.target.value))} className="mt-3 w-full accent-[rgb(var(--ink))]" />
+        <input id="dl" type="range" min={1} max={25} value={daily} onChange={(e) => setDaily(Number(e.target.value))} className="mt-3 w-full accent-[rgb(var(--primary))]" />
       </section>
 
       <section className="rounded-panel border border-rule bg-sheet p-5">

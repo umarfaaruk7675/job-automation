@@ -1,10 +1,9 @@
 import type { Config } from "tailwindcss";
 
 /*
- * Design tokens for Shortlist (working name).
- * Concept: a job application you can sign your name to. The palette borrows
- * from paperwork — plain paper, dark ink, a green "sent" stamp and an amber
- * "needs you" flag — so colour always carries meaning, never decoration.
+ * Design tokens for Shortlist (working name). Dark navy surfaces, one blue
+ * for actions, green for "sent" and amber for "needs you", so colour always
+ * carries meaning. Matches the look of the StudyBuddy AI app.
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
@@ -16,6 +15,8 @@ const config: Config = {
         ink: "rgb(var(--ink) / <alpha-value>)", // primary text and primary buttons
         muted: "rgb(var(--muted) / <alpha-value>)", // secondary text
         rule: "rgb(var(--rule) / <alpha-value>)", // borders and dividers
+        primary: { DEFAULT: "rgb(var(--primary) / <alpha-value>)", hover: "rgb(var(--primary-hover) / <alpha-value>)" }, // actions
+        glow: "rgb(var(--glow) / <alpha-value>)", // card highlights
         sent: { DEFAULT: "rgb(var(--sent) / <alpha-value>)", soft: "rgb(var(--sent-soft) / <alpha-value>)" }, // submitted, approved
         hold: { DEFAULT: "rgb(var(--hold) / <alpha-value>)", soft: "rgb(var(--hold-soft) / <alpha-value>)" }, // waiting for the user
       },
@@ -40,7 +41,8 @@ const config: Config = {
         panel: "1rem",
       },
       boxShadow: {
-        lift: "0 1px 0 rgb(var(--rule)), 0 12px 32px -16px rgb(22 33 29 / 0.25)",
+        lift: "0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -20px rgb(0 0 0 / 0.7)",
+        glow: "0 0 0 1px rgb(var(--glow) / 0.35), 0 10px 40px -10px rgb(var(--glow) / 0.45)",
       },
     },
   },

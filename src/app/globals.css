@@ -3,15 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --paper: 242 244 241; /* #f2f4f1 */
-  --sheet: 255 255 255; /* #ffffff */
-  --ink: 22 33 29; /* #16211d */
-  --muted: 86 101 94; /* #56655e */
-  --rule: 214 221 216; /* #d6ddd8 */
-  --sent: 29 115 73; /* #1d7349 */
-  --sent-soft: 226 240 231; /* #e2f0e7 */
-  --hold: 140 82 0; /* #8c5200 */
-  --hold-soft: 251 239 217; /* #fbefd9 */
+  /* Dark navy theme, matching StudyBuddy AI. Values are RGB channels. */
+  --paper: 11 17 32; /* #0b1120 page background */
+  --sheet: 19 28 49; /* #131c31 cards and panels */
+  --ink: 229 233 240; /* #e5e9f0 main text */
+  --muted: 148 163 184; /* #94a3b8 secondary text */
+  --rule: 38 50 74; /* #26324a borders */
+  --primary: 37 99 235; /* #2563eb buttons and links (white text 5.2:1) */
+  --primary-hover: 29 78 216; /* #1d4ed8 */
+  --glow: 59 130 246; /* #3b82f6 card glow */
+  --sent: 34 197 94; /* #22c55e success */
+  --sent-soft: 14 46 33; /* #0e2e21 */
+  --hold: 245 158 11; /* #f59e0b needs attention */
+  --hold-soft: 51 37 10; /* #33250a */
+  color-scheme: dark;
 }
 
 @layer base {
@@ -31,5 +36,62 @@
     html {
       scroll-behavior: auto;
     }
+  }
+}
+
+@layer components {
+  /* Card whose border lights up around the pointer (like StudyBuddy's bento cards). */
+  .glow-card {
+    --gx: 50%;
+    --gy: 50%;
+    --gi: 0;
+    position: relative;
+    isolation: isolate;
+  }
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(260px circle at var(--gx) var(--gy), rgb(var(--glow) / calc(var(--gi) * 0.9)), rgb(var(--glow) / calc(var(--gi) * 0.25)) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+  .glow-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(360px circle at var(--gx) var(--gy), rgb(var(--glow) / calc(var(--gi) * 0.08)), transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  /* Gentle floating for the hero preview cards; CSS so it stays off the main thread. */
+  .float-a { animation: float 6s ease-in-out infinite; }
+  .float-b { animation: float 7s ease-in-out infinite reverse; }
+  .float-c { animation: float 8s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .float-a, .float-b, .float-c { animation: none; }
+  }
+  /* Page-load entrance without JavaScript. */
+  .enter { animation: enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .enter-2 { animation-delay: 0.15s; }
+  .enter-3 { animation-delay: 0.3s; }
+  @keyframes enter { from { opacity: 0; transform: translateY(16px); } }
+  .grow-bar { animation: grow 1.4s 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: left; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .enter, .grow-bar { animation: none; }
+  }
+  .grid-backdrop {
+    background-image: linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
   }
 }
