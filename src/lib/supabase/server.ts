@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 export function createClient() {
   const cookieStore = cookies();
   return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
+    // Next.js 14 caches fetch() by default; database reads must always be fresh.
+    global: { fetch: noStoreFetch },
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -36,3 +38,5 @@ export async function getSignedInUser() {
   const name = (meta.full_name as string) || (meta.name as string) || (claims.email as string) || "there";
   return { id: claims.sub as string, email: (claims.email as string) ?? "", name };
 }
+
+export const noStoreFetch: typeof fetch = (input, init) => fetch(input, { ...init, cache: "no-store" });
