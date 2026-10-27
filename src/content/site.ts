@@ -9,7 +9,7 @@ export const site = {
     { label: "FAQ", href: "#faq" },
   ],
   primaryCta: { label: "Upload your resume", href: "#start" },
-  signIn: { label: "Sign in", href: "#sign-in" },
+  signIn: { label: "Sign in", href: "/signin" },
   hero: {
     headline: "Job applications you'd sign your name to.",
     body:
