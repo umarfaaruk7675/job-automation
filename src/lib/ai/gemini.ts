@@ -32,7 +32,8 @@ export async function generateJson<T>(opts: {
       contents: [{ role: "user", parts: [{ text: opts.prompt }] }],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: opts.maxOutputTokens ?? 4096,
+        // A floor leaves room for models that spend tokens thinking before answering.
+        maxOutputTokens: Math.max(1024, opts.maxOutputTokens ?? 4096),
         responseMimeType: "application/json",
         responseSchema: opts.schema,
       },

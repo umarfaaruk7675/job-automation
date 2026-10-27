@@ -106,7 +106,7 @@ async function aiScore(job: JobRow, r: ResumeData, p: Profile): Promise<Scored |
     system: SCORE_SYSTEM,
     prompt: `CANDIDATE PROFILE (JSON):\n${JSON.stringify(profile)}\n\nJOB:\nTitle: ${job.title}\nCompany: ${job.companies?.name ?? ""}\nLocation: ${job.location ?? ""}${job.remote ? " (remote)" : ""}\nDescription:\n"""${cleanUntrusted(job.description ?? "", 7000)}"""`,
     schema: SCORE_SCHEMA,
-    maxOutputTokens: 800,
+    maxOutputTokens: 1500,
   });
   if (!out) return null;
   const known = new Set((r.skills ?? []).map((s) => s.toLowerCase()));
