@@ -2,7 +2,7 @@
 
 import { m, type Variants } from "framer-motion";
 import { site } from "@/content/site";
-import { ApplicationLedger } from "./ApplicationLedger";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
 
 const intro: Variants = {
   hidden: {},
@@ -21,9 +21,14 @@ const rise: Variants = {
 export function Hero() {
   const { hero, primaryCta } = site;
   return (
-    <section className="relative overflow-hidden" aria-labelledby="hero-title">
-      <div className="mx-auto grid max-w-page grid-cols-1 items-center gap-12 px-4 pb-20 pt-10 sm:px-6 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pb-28 lg:pt-24">
-        <m.div variants={intro} initial="hidden" animate="show" className="min-w-0">
+    <>
+      <section aria-labelledby="hero-title">
+        <m.div
+          variants={intro}
+          initial="hidden"
+          animate="show"
+          className="mx-auto max-w-page px-4 pb-16 pt-12 sm:px-6 md:pt-20 lg:pb-24 lg:pt-28"
+        >
           <m.h1 id="hero-title" variants={lift} className="max-w-[15ch] text-display font-extrabold">
             {hero.headline}
           </m.h1>
@@ -52,9 +57,24 @@ export function Hero() {
             {hero.note}
           </m.p>
         </m.div>
+      </section>
 
-        <ApplicationLedger />
-      </div>
-    </section>
+      <section id="how-it-works" aria-labelledby="how-title" className="border-t border-rule">
+        <div className="mx-auto max-w-page px-4 py-16 sm:px-6 lg:py-20">
+          <h2 id="how-title" className="text-h2 font-extrabold">
+            How it works
+          </h2>
+          <Reveal as="ol" className="mt-10 grid gap-8 md:grid-cols-3 md:gap-10">
+            {hero.steps.map((step, i) => (
+              <RevealItem as="li" key={step.title} className="border-t-2 border-ink pt-5">
+                <p className="text-sm font-semibold text-muted">Step {i + 1}</p>
+                <h3 className="mt-1 text-h3 font-bold">{step.title}</h3>
+                <p className="mt-2 text-muted">{step.body}</p>
+              </RevealItem>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+    </>
   );
 }

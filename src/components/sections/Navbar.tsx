@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, m, useMotionValueEvent, useScroll } from "framer-motion";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
@@ -10,6 +10,14 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 8));
+
+  // A Supabase session cookie means the visitor is probably signed in. Checking
+  // the cookie avoids loading the auth SDK on the landing page; the dashboard
+  // verifies the session properly.
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => setSignedIn(/(^|; )sb-[^=]+-auth-token(\.0)?=/.test(document.cookie)), []);
+  const cta = signedIn ? { label: "Open dashboard", href: "/dashboard" } : site.primaryCta;
+  const menuLinks = signedIn ? site.nav : [...site.nav, site.signIn];
 
   return (
     <header
@@ -40,14 +48,14 @@ export function Navbar() {
         </ul>
 
         <div className="hidden items-center gap-3 md:flex">
-          <NavLink href={site.signIn.href}>{site.signIn.label}</NavLink>
+          {!signedIn && <NavLink href={site.signIn.href}>{site.signIn.label}</NavLink>}
           <m.a
-            href={site.primaryCta.href}
+            href={cta.href}
             whileHover={{ y: -1 }}
             whileTap={{ scale: 0.97 }}
             className="rounded-control bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-sent"
           >
-            {site.primaryCta.label}
+            {cta.label}
           </m.a>
         </div>
 
@@ -84,7 +92,7 @@ export function Navbar() {
             className="overflow-hidden border-t border-rule md:hidden"
           >
             <ul className="flex flex-col px-4 py-3">
-              {[...site.nav, site.signIn].map((l) => (
+              {menuLinks.map((l) => (
                 <li key={l.href}>
                   <a
                     href={l.href}
@@ -97,11 +105,11 @@ export function Navbar() {
               ))}
               <li className="pb-2 pt-3">
                 <a
-                  href={site.primaryCta.href}
+                  href={cta.href}
                   onClick={() => setOpen(false)}
                   className="block rounded-control bg-ink px-4 py-3 text-center font-semibold text-paper"
                 >
-                  {site.primaryCta.label}
+                  {cta.label}
                 </a>
               </li>
             </ul>

@@ -5,14 +5,15 @@
  * Changes from the original:
  * - One component for both pages via a `mode` prop; each mode has its own URL.
  * - Labels are tied to their inputs, errors are announced, and fields autocomplete.
- * - GitHub, Twitter and LinkedIn are replaced by Google, the only social sign-in
- *   the app supports. "Remember me" is removed because sessions persist anyway.
+ * - Social sign-in is Google, LinkedIn and GitHub through Supabase; Twitter is dropped.
+ *   "Remember me" is removed because sessions persist anyway.
  * - The particle canvas stops on unmount, pauses in hidden tabs and is off for
  *   people who prefer reduced motion.
  * - Submits to Supabase Auth when it is configured.
  */
 
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
@@ -174,6 +175,33 @@ function GoogleMark() {
   );
 }
 
+function LinkedInMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+      <rect width="24" height="24" rx="4" fill="#0A66C2" />
+      <path fill="#fff" d="M7.1 9.6H4.6V19h2.5V9.6zM5.9 5a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9zM19.4 13.6c0-2.5-1.3-4.2-3.7-4.2-1.2 0-2 .6-2.4 1.2V9.6h-2.4V19h2.5v-4.9c0-1.3.4-2.4 1.8-2.4 1.3 0 1.6 1.1 1.6 2.4V19h2.6v-5.4z" />
+    </svg>
+  );
+}
+
+function GitHubMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"
+      />
+    </svg>
+  );
+}
+
+type Provider = "google" | "linkedin_oidc" | "github";
+const PROVIDERS: { id: Provider; label: string; mark: () => JSX.Element }[] = [
+  { id: "google", label: "Google", mark: GoogleMark },
+  { id: "linkedin_oidc", label: "LinkedIn", mark: LinkedInMark },
+  { id: "github", label: "GitHub", mark: GitHubMark },
+];
+
 type Status = { tone: "error" | "info"; text: string } | null;
 
 // Loaded on first use so the auth SDK isn't in the page's initial JavaScript.
@@ -203,12 +231,20 @@ const COPY = {
 
 export function Component({ mode = "signup" }: { mode?: Mode }) {
   const copy = COPY[mode];
+  const router = useRouter();
+  const params = useSearchParams();
+  const next = safeNext(params.get("next"));
+  const callback = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState<Status>(null);
+  const [status, setStatus] = useState<Status>(() => {
+    const error = params.get("error");
+    return error ? { tone: "error", text: error } : null;
+  });
+  const [pendingProvider, setPendingProvider] = useState<Provider | null>(null);
   const [tried, setTried] = useState(false);
 
   const emailOk = /^\S+@\S+\.\S+$/.test(email);
@@ -239,31 +275,42 @@ export function Component({ mode = "signup" }: { mode?: Mode }) {
     if (!supabase) return notConfigured();
 
     setSubmitting(true);
-    const { error } =
+    const { data, error } =
       mode === "signup"
         ? await supabase.auth.signUp({
             email,
             password,
-            options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/` },
+            options: { data: { full_name: name.trim() }, emailRedirectTo: callback() },
           })
         : await supabase.auth.signInWithPassword({ email, password });
     setSubmitting(false);
 
     if (error) return setStatus({ tone: "error", text: error.message });
-    setStatus({
-      tone: "info",
-      text: mode === "signup" ? `Check ${email} for a link to confirm your account.` : "Signed in.",
-    });
+    // Signed in straight away (sign-in, or sign-up with confirmation off).
+    if (data.session) {
+      router.replace(next);
+      router.refresh();
+      return;
+    }
+    setStatus({ tone: "info", text: `Check ${email} for a link to confirm your account.` });
   }
 
-  async function google() {
+  async function social(provider: Provider) {
+    setStatus(null);
     const supabase = await loadSupabase();
     if (!supabase) return notConfigured();
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
-    });
-    if (error) setStatus({ tone: "error", text: error.message });
+    setPendingProvider(provider);
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: callback() } });
+    if (error) {
+      setPendingProvider(null);
+      const label = PROVIDERS.find((p) => p.id === provider)?.label;
+      setStatus({
+        tone: "error",
+        text: /not enabled|unsupported provider/i.test(error.message)
+          ? `${label} sign-in isn't switched on yet. Use your email for now.`
+          : error.message,
+      });
+    }
   }
 
   async function resetPassword() {
@@ -273,7 +320,7 @@ export function Component({ mode = "signup" }: { mode?: Mode }) {
     }
     const supabase = await loadSupabase();
     if (!supabase) return notConfigured();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/signin` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: callback() });
     setStatus(error ? { tone: "error", text: error.message } : { tone: "info", text: `Check ${email} for a reset link.` });
   }
 
@@ -306,16 +353,22 @@ export function Component({ mode = "signup" }: { mode?: Mode }) {
             <p className="mt-2 text-muted">{copy.body}</p>
           </div>
 
-          <m.button
-            type="button"
-            onClick={google}
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-control border border-rule bg-sheet font-semibold transition-colors hover:border-ink"
-          >
-            <GoogleMark />
-            Continue with Google
-          </m.button>
+          <div className="space-y-2.5">
+            {PROVIDERS.map(({ id, label, mark: Mark }) => (
+              <m.button
+                key={id}
+                type="button"
+                onClick={() => social(id)}
+                disabled={pendingProvider !== null}
+                whileHover={pendingProvider ? undefined : { y: -1 }}
+                whileTap={pendingProvider ? undefined : { scale: 0.98 }}
+                className="flex h-12 w-full items-center justify-center gap-3 rounded-control border border-rule bg-sheet font-semibold transition-colors hover:border-ink disabled:cursor-wait disabled:opacity-60"
+              >
+                <Mark />
+                {pendingProvider === id ? `Opening ${label}…` : `Continue with ${label}`}
+              </m.button>
+            ))}
+          </div>
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center" aria-hidden>
@@ -421,4 +474,9 @@ export function Component({ mode = "signup" }: { mode?: Mode }) {
       </m.div>
     </div>
   );
+}
+
+// Only allow redirects to paths on this site.
+function safeNext(value: string | null) {
+  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
 }
