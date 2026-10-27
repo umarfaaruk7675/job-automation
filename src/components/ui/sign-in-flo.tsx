@@ -13,7 +13,7 @@
  */
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
@@ -229,21 +229,25 @@ const COPY = {
   },
 } as const;
 
-export function Component({ mode = "signup" }: { mode?: Mode }) {
+export function Component({
+  mode = "signup",
+  nextPath,
+  initialError,
+}: {
+  mode?: Mode;
+  nextPath?: string;
+  initialError?: string;
+}) {
   const copy = COPY[mode];
   const router = useRouter();
-  const params = useSearchParams();
-  const next = safeNext(params.get("next"));
+  const next = safeNext(nextPath ?? null);
   const callback = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState<Status>(() => {
-    const error = params.get("error");
-    return error ? { tone: "error", text: error } : null;
-  });
+  const [status, setStatus] = useState<Status>(initialError ? { tone: "error", text: initialError } : null);
   const [pendingProvider, setPendingProvider] = useState<Provider | null>(null);
   const [tried, setTried] = useState(false);
 
