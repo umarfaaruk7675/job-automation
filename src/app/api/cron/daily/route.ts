@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { discoverJobs, seedCompanies } from "@/lib/jobs/discover";
 import { matchUser } from "@/lib/matching";
 import { esc, layout, sendEmail } from "@/lib/email";
-import { generateJson } from "@/lib/ai/gemini";
+import { generateJson, lastAiError } from "@/lib/ai/gemini";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       schema: { type: "OBJECT", properties: { ok: { type: "BOOLEAN" } }, required: ["ok"] },
       maxOutputTokens: 20,
     });
-    return NextResponse.json({ ai: ai?.ok === true, model: process.env.GEMINI_MODEL || "gemini-flash-lite-latest", email: Boolean(process.env.RESEND_API_KEY) });
+    return NextResponse.json({ ai: ai?.ok === true, aiError: ai ? null : lastAiError, model: process.env.GEMINI_MODEL || "gemini-flash-lite-latest", email: Boolean(process.env.RESEND_API_KEY) });
   }
 
   const started = Date.now();

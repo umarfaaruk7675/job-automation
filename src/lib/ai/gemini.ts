@@ -8,6 +8,9 @@ import "server-only";
  */
 const MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 
+/** The last error from Gemini, for the health check (never includes the key). */
+export let lastAiError: string | null = null;
+
 export function aiEnabled() {
   return Boolean(process.env.GEMINI_API_KEY);
 }
@@ -38,9 +41,11 @@ export async function generateJson<T>(opts: {
   });
 
   if (!res.ok) {
-    console.error("Gemini error", res.status, (await res.text()).slice(0, 500));
+    lastAiError = `${res.status}: ${(await res.text()).slice(0, 300)}`;
+    console.error("Gemini error", lastAiError);
     return null;
   }
+  lastAiError = null;
   const data = await res.json();
   const text: string | undefined = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("");
   if (!text) return null;
