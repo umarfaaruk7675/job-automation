@@ -51,11 +51,11 @@ describe("matchUser", () => {
     expect(db.log.some((o) => o.table === "applications" && has(o, "upsert"))).toBe(false);
   });
 
-  it("creates review applications and logs an event for each", async () => {
+  it("creates queued applications and logs an event for each", async () => {
     const db = setup({ p: profile({ match_threshold: 50 }), jobs: [good(1), good(2)] });
     const r = await matchUser(db as any, "u1");
     expect(r.created).toBe(2);
-    expect(upserted(db, "applications").every((a) => a.state === "review")).toBe(true);
+    expect(upserted(db, "applications").every((a) => a.state === "queued")).toBe(true);
     const events = arg(db.log.find((o) => o.table === "application_events")!, "insert") as any[];
     expect(events).toHaveLength(2);
   });

@@ -523,8 +523,8 @@ function MatchingStep({ p, set }: { p: Profile; set: (x: Partial<Profile>) => vo
       </div>
 
       <div className="rounded-panel border border-rule bg-sheet p-5">
-        <p className="font-semibold">Review each application</p>
-        <p className="mt-1 text-muted">On. You'll approve every application before it goes out. Autopilot becomes available after you've approved 10.</p>
+        <p className="font-semibold">AI applies for you</p>
+        <p className="mt-1 text-muted">Jobs at your match bar are applied to automatically. If a job needs something that isn't on your profile, it waits for your answer first: approve to apply, or reject.</p>
       </div>
 
       <div className="rounded-panel border border-rule bg-sheet p-5">
@@ -576,7 +576,7 @@ function ReviewStep({ p, r, onEdit }: { p: Profile; r: ResumeData; onEdit: (step
     { step: 2, title: "Experience", lines: r.experience.length ? r.experience.map((e) => `${e.title}, ${e.company}`) : ["No roles added"] },
     { step: 3, title: "Skills and education", lines: [r.skills.slice(0, 12).join(", ") + (r.skills.length > 12 ? ` and ${r.skills.length - 12} more` : ""), ...r.education.map((e) => `${e.degree}${e.field ? ` in ${e.field}` : ""}, ${e.institution}`)].filter(Boolean) },
     { step: 4, title: "Looking for", lines: [p.target_roles.join(", "), p.work_modes.join(", "), p.preferred_locations.join(", "), p.needs_sponsorship == null ? "" : p.needs_sponsorship ? "Needs sponsorship" : "No sponsorship needed"].filter(Boolean) },
-    { step: 5, title: "Matching", lines: [`Show jobs at ${p.match_threshold}% or more`, `Up to ${p.daily_limit} new jobs a day`, "You review every application"] },
+    { step: 5, title: "Matching", lines: [`Show jobs at ${p.match_threshold}% or more`, `Up to ${p.daily_limit} new jobs a day`, "AI applies for you. It asks only when something is missing"] },
   ];
   return (
     <div>

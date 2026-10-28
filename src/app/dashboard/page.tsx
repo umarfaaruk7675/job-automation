@@ -24,12 +24,12 @@ export default async function Overview({ searchParams }: { searchParams: { welco
 
   const count = (states: string[]) => apps.filter((a) => states.includes(a.state)).length;
   const stats = [
-    { label: "Ready for review", value: count(["review"]), href: "/dashboard/applications?tab=review" },
-    { label: "Need your answer", value: count(["hold"]), href: "/dashboard/applications?tab=review" },
-    { label: "Applied", value: count(["applied", "approved"]), href: "/dashboard/applications?tab=applied" },
+    { label: "Applying", value: count(["queued", "review", "approved"]), href: "/dashboard/applications?tab=queued" },
+    { label: "Need your answer", value: count(["hold"]), href: "/dashboard/applications?tab=hold" },
+    { label: "Applied", value: count(["applied"]), href: "/dashboard/applications?tab=applied" },
     { label: "Interviews and offers", value: count(["interview", "offer"]), href: "/dashboard/applications?tab=applied" },
   ];
-  const ready = apps.filter((a) => a.state === "review").slice(0, 6);
+  const ready = apps.filter((a) => ["queued", "review", "approved", "applied"].includes(a.state)).slice(0, 6);
   const first = (profile?.full_name ?? "").split(" ")[0];
 
   return (
@@ -39,7 +39,7 @@ export default async function Overview({ searchParams }: { searchParams: { welco
           <RevealItem as="h2" className="text-h2 font-extrabold">{first ? `Hello, ${first}.` : "Hello."}</RevealItem>
           <RevealItem as="p" className="mt-2 max-w-prose text-muted">
             {jobCount ? `We're watching ${jobCount.toLocaleString()} open jobs on company career pages. ` : ""}
-            You'll see jobs at {profile?.match_threshold ?? 80}% match or above for {profile?.target_roles?.slice(0, 3).join(", ") || "your roles"}.
+            The AI applies to jobs at {profile?.match_threshold ?? 80}% match or above for {profile?.target_roles?.slice(0, 3).join(", ") || "your roles"}.
           </RevealItem>
         </div>
         <RevealItem>
@@ -65,7 +65,7 @@ export default async function Overview({ searchParams }: { searchParams: { welco
       <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
         <section aria-labelledby="holds-title">
           <h2 id="holds-title" className="text-h3 font-bold">Needs your answer</h2>
-          <p className="mt-1 text-sm text-muted">These fit you well but ask for something that isn't on your profile.</p>
+          <p className="mt-1 text-sm text-muted">These fit you well but ask for something that isn't on your profile. Yes and the AI applies, no and it's rejected.</p>
           <ul className="mt-4 space-y-3">
             {(holds ?? []).length ? (
               (holds ?? []).map((h) => {
@@ -80,14 +80,14 @@ export default async function Overview({ searchParams }: { searchParams: { welco
 
         <section aria-labelledby="ready-title">
           <div className="flex items-baseline justify-between">
-            <h2 id="ready-title" className="text-h3 font-bold">Ready for review</h2>
+            <h2 id="ready-title" className="text-h3 font-bold">Applying and applied</h2>
             <Link href="/dashboard/applications" className="text-sm font-semibold underline-offset-4 hover:underline">See all</Link>
           </div>
           <ul className="mt-4 space-y-3">
             {ready.length ? (
               ready.map((a, i) => <ApplicationRow key={a.id} a={a} index={i} />)
             ) : (
-              <EmptyState title="No jobs to review yet" body="Run a search now, or wait for tomorrow's daily check. New matches appear here." />
+              <EmptyState title="Nothing applied to yet" body="Run a search now, or wait for tomorrow's daily check. Matches the AI applies to appear here." />
             )}
           </ul>
         </section>

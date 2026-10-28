@@ -2,29 +2,26 @@
 
 import { useState, useTransition } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { Lock } from "lucide-react";
 import { addCompany, saveSettings } from "@/app/actions/app";
 import { Button, TagInput, Toggle } from "@/components/ui/form";
 import { cn } from "@/lib/cn";
 import type { Profile } from "@/lib/types";
 
-export function SettingsForm({ profile, approvedCount, followed: initialFollowed }: { profile: Profile; approvedCount: number; followed: string[] }) {
+export function SettingsForm({ profile, followed: initialFollowed }: { profile: Profile; followed: string[] }) {
   const [threshold, setThreshold] = useState(profile.match_threshold);
   const [daily, setDaily] = useState(profile.daily_limit);
   const [digest, setDigest] = useState(profile.digest_emails);
   const [excluded, setExcluded] = useState(profile.excluded_companies ?? []);
-  const [mode, setMode] = useState(profile.submission_mode);
   const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, start] = useTransition();
   const [url, setUrl] = useState("");
   const [followed, setFollowed] = useState(initialFollowed);
   const [followMsg, setFollowMsg] = useState<string | null>(null);
   const [following, startFollow] = useTransition();
-  const unlocked = approvedCount >= 10;
 
   const save = () =>
     start(async () => {
-      const res = await saveSettings({ match_threshold: threshold, daily_limit: daily, digest_emails: digest, excluded_companies: excluded, submission_mode: mode });
+      const res = await saveSettings({ match_threshold: threshold, daily_limit: daily, digest_emails: digest, excluded_companies: excluded });
       setStatus(res.ok ? { ok: true, text: "Settings saved." } : { ok: false, text: res.error ?? "That didn't save." });
     });
 
@@ -32,7 +29,7 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
     <div className="space-y-5">
       <section className="rounded-panel border border-rule bg-sheet p-5">
         <div className="flex items-baseline justify-between">
-          <label htmlFor="th" className="font-semibold">Lowest match to send to review</label>
+          <label htmlFor="th" className="font-semibold">Lowest match to apply to</label>
           <span className="text-h3 font-extrabold tabular-nums">{threshold}%</span>
         </div>
         <input id="th" type="range" min={50} max={95} step={5} value={threshold} onChange={(e) => setThreshold(Number(e.target.value))} className="mt-3 w-full accent-[rgb(var(--primary))]" />
@@ -47,22 +44,8 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
       </section>
 
       <section className="rounded-panel border border-rule bg-sheet p-5">
-        <p className="font-semibold">Submission</p>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          {(["review", "autopilot"] as const).map((v) => {
-            const locked = v === "autopilot" && !unlocked;
-            return (
-              <button key={v} type="button" disabled={locked} aria-pressed={mode === v} onClick={() => setMode(v)}
-                className={cn("rounded-control border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60", mode === v ? "border-ink bg-sand" : "border-rule hover:border-ink")}>
-                <p className="flex items-center gap-1.5 font-semibold">{locked && <Lock className="h-3.5 w-3.5" aria-hidden />}{v === "review" ? "Review each one" : "Autopilot"}</p>
-                <p className="mt-1 text-sm text-muted">
-                  {v === "review" ? "You approve every application." : unlocked ? "Applications at your bar with no questions go out within your daily limit." : `Unlocks after 10 approvals. You have ${approvedCount}.`}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-        {mode === "autopilot" && <p className="mt-3 text-sm text-muted">Automatic submission needs the application worker, which is the next part of the build. Until then autopilot approves jobs for you to finish on the company's site.</p>}
+        <p className="font-semibold">Applying</p>
+        <p className="mt-1 text-sm text-muted">The AI applies to every job at or above your match bar. It stops and asks you only when something the job needs is missing from your profile. Those jobs wait in Applications, under Needs your answer.</p>
       </section>
 
       <section className="rounded-panel border border-rule bg-sheet p-5">

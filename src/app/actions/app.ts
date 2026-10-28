@@ -33,7 +33,7 @@ export async function answerHold(applicationId: number, skill: string, hasIt: bo
 
   if (!hasIt) {
     await supabase.from("applications").update({ state: "skipped", hold_questions: [] }).eq("id", applicationId);
-    await logEvent(supabase, userId, applicationId, "skipped", `Skipped: no experience with ${skill}`);
+    await logEvent(supabase, userId, applicationId, "skipped", `You rejected this job: no experience with ${skill}`);
     refresh();
     return { ok: true, state: "skipped" };
   }
@@ -44,9 +44,9 @@ export async function answerHold(applicationId: number, skill: string, hasIt: bo
   await supabase.from("resume_profiles").update({ skills }).eq("user_id", userId);
 
   const remaining = ((app.hold_questions as Gap[]) ?? []).filter((q) => q.skill.toLowerCase() !== skill.toLowerCase());
-  const state = remaining.length ? "hold" : "review";
+  const state = remaining.length ? "hold" : "queued";
   await supabase.from("applications").update({ hold_questions: remaining, state }).eq("id", applicationId);
-  await logEvent(supabase, userId, applicationId, state, `You confirmed ${skill}; added to your profile`);
+  await logEvent(supabase, userId, applicationId, state, remaining.length ? `You confirmed ${skill}; added to your profile` : `You approved. ${skill} added to your profile and the AI will apply`);
   refresh();
   return { ok: true, state };
 }
@@ -75,14 +75,14 @@ export async function tailorApplication(applicationId: number) {
   return { ok: true, tailored };
 }
 
-const NEXT_STATES = ["approved", "applied", "skipped", "review", "interview", "offer", "rejected", "closed"] as const;
+const NEXT_STATES = ["approved", "applied", "skipped", "queued", "interview", "offer", "rejected", "closed"] as const;
 type NextState = (typeof NEXT_STATES)[number];
 
 const DETAIL: Record<NextState, string> = {
-  approved: "You approved it. Finish on the company's page.",
+  approved: "You opened the company's page to finish",
   applied: "You confirmed it was submitted",
-  skipped: "You skipped this job",
-  review: "Moved back to review",
+  skipped: "You rejected this job",
+  queued: "Moved back to the queue",
   interview: "Interview",
   offer: "Offer",
   rejected: "Not selected",
@@ -138,34 +138,23 @@ export async function addCompany(careersUrl: string) {
   return { ok: true, name, existed: Boolean(error) };
 }
 
-type SettingsInput = Pick<Profile, "match_threshold" | "daily_limit" | "digest_emails" | "excluded_companies"> & { submission_mode: "review" | "autopilot" };
+type SettingsInput = Pick<Profile, "match_threshold" | "daily_limit" | "digest_emails" | "excluded_companies">;
 
 export async function saveSettings(input: SettingsInput) {
   const { supabase, userId } = await requireUser();
   const threshold = Math.max(50, Math.min(100, Math.round(input.match_threshold)));
   const daily = Math.max(1, Math.min(50, Math.round(input.daily_limit)));
 
-  let mode: "review" | "autopilot" = "review";
-  if (input.submission_mode === "autopilot") {
-    // Autopilot unlocks after the user has approved enough matches themselves.
-    const { count } = await supabase
-      .from("applications")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .in("state", ["approved", "applied", "interview", "offer", "rejected"]);
-    if ((count ?? 0) < 10) return { ok: false, error: `Autopilot unlocks after you've approved 10 applications. You've approved ${count ?? 0}.` };
-    mode = "autopilot";
-  }
   const { error } = await supabase
     .from("profiles")
-    .update({ match_threshold: threshold, daily_limit: daily, digest_emails: input.digest_emails, excluded_companies: input.excluded_companies, submission_mode: mode })
+    .update({ match_threshold: threshold, daily_limit: daily, digest_emails: input.digest_emails, excluded_companies: input.excluded_companies })
     .eq("id", userId);
   if (error) return { ok: false, error: error.message };
   refresh();
   return { ok: true };
 }
 
-/** Pulls a scored match into the review list, even if it's below the bar. */
+/** Applies to a scored job the user picked, even if it's below the bar. */
 export async function reviewMatch(matchId: number) {
   const { supabase, userId } = await requireUser();
   const { data: match } = await supabase.from("matches").select("id, job_id, gaps").eq("id", matchId).eq("user_id", userId).single();
@@ -173,11 +162,11 @@ export async function reviewMatch(matchId: number) {
   const gaps = (match.gaps as Gap[]) ?? [];
   const { data: app, error } = await supabase
     .from("applications")
-    .upsert({ user_id: userId, job_id: match.job_id, match_id: match.id, state: gaps.length ? "hold" : "review", hold_questions: gaps }, { onConflict: "user_id,job_id", ignoreDuplicates: false })
+    .upsert({ user_id: userId, job_id: match.job_id, match_id: match.id, state: gaps.length ? "hold" : "queued", hold_questions: gaps }, { onConflict: "user_id,job_id", ignoreDuplicates: false })
     .select("id, state")
     .single();
   if (error || !app) return { ok: false as const };
-  await logEvent(supabase, userId, app.id, app.state, "You added this job to review");
+  await logEvent(supabase, userId, app.id, app.state, app.state === "hold" ? "You chose this job. It needs your answer first" : "You chose this job. The AI will apply");
   refresh();
   return { ok: true as const, applicationId: app.id };
 }

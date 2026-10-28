@@ -62,17 +62,17 @@ export async function GET(request: NextRequest) {
       .from("applications")
       .select("state, jobs(title, companies(name))")
       .eq("user_id", u.id)
-      .in("state", ["review", "hold"])
+      .in("state", ["queued", "review", "hold"])
       .order("created_at", { ascending: false })
       .limit(10);
     if (waiting?.length) {
       const items = waiting
         .map((a) => {
           const j = a.jobs as unknown as { title: string; companies: { name: string } | null };
-          return `<li>${esc(j.title)} at ${esc(j.companies?.name ?? "")}${a.state === "hold" ? " <b>(needs your answer)</b>" : ""}</li>`;
+          return `<li>${esc(j.title)} at ${esc(j.companies?.name ?? "")}${a.state === "hold" ? " <b>(needs your answer)</b>" : " (the AI is applying)"}</li>`;
         })
         .join("");
-      if (await sendEmail(u.email, `${waiting.length} job${waiting.length > 1 ? "s" : ""} waiting for you`, layout("Jobs waiting for your review", `<ul>${items}</ul>`))) emailed++;
+      if (await sendEmail(u.email, `${waiting.length} job${waiting.length > 1 ? "s" : ""} in progress`, layout("Your applications today", `<ul>${items}</ul>`))) emailed++;
     }
   }
 

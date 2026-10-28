@@ -16,10 +16,10 @@ export function HoldCard({ id, title, company, questions }: { id: number; title:
     start(async () => {
       const res = await answerHold(id, q.skill, yes);
       if (!res.ok) return;
-      if (!yes) return setDone("Skipped. We won't suggest this one again.");
+      if (!yes) return setDone("Rejected. We won't apply to this one.");
       const rest = left.slice(1);
       setLeft(rest);
-      if (!rest.length) setDone(`Added ${q.skill} to your profile. This job is ready for review.`);
+      if (!rest.length) setDone(`Approved. ${q.skill} is on your profile and the AI will apply.`);
     });
 
   return (
@@ -39,10 +39,10 @@ export function HoldCard({ id, title, company, questions }: { id: number; title:
             <p className="text-sm">{q.question}</p>
             <div className="mt-2.5 flex gap-2">
               <button type="button" disabled={busy} onClick={() => answer(true)} className="rounded-control bg-primary px-3 py-1.5 text-sm font-semibold text-primary-fg transition-transform active:scale-95 disabled:opacity-60">
-                Yes, add it
+                Yes, apply
               </button>
               <button type="button" disabled={busy} onClick={() => answer(false)} className="rounded-control border border-hold/40 bg-sheet/60 px-3 py-1.5 text-sm font-semibold transition-transform active:scale-95 disabled:opacity-60">
-                No, skip this job
+                No, reject
               </button>
             </div>
           </m.div>

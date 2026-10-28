@@ -145,8 +145,8 @@ export async function aiScore(job: JobRow, r: ResumeData, p: Profile): Promise<S
 
 /**
  * Finds new matches for one user. Code applies the filters; the model only
- * scores. Jobs at or above the user's bar become applications for review, or
- * holds when a must-have is missing from the profile.
+ * scores. Jobs at or above the user's bar are queued for the AI to apply to,
+ * or put on hold when a must-have is missing from the profile.
  */
 export async function matchUser(db: SupabaseClient, userId: string) {
   const [{ data: profile }, { data: resume }] = await Promise.all([
@@ -218,13 +218,13 @@ export async function matchUser(db: SupabaseClient, userId: string) {
   for (const m of qualifying) {
     if (room-- <= 0) break;
     const gaps = (m.gaps as Gap[]) ?? [];
-    apps.push({ user_id: userId, job_id: m.job_id, match_id: m.id, state: gaps.length ? "hold" : "review", hold_questions: gaps });
+    apps.push({ user_id: userId, job_id: m.job_id, match_id: m.id, state: gaps.length ? "hold" : "queued", hold_questions: gaps });
   }
   if (apps.length) {
     const { data: created } = await db.from("applications").upsert(apps, { onConflict: "user_id,job_id", ignoreDuplicates: true }).select("id, state");
     if (created?.length) {
       await db.from("application_events").insert(
-        created.map((a) => ({ application_id: a.id, user_id: userId, state: a.state, detail: a.state === "hold" ? "Waiting for your answer" : "Ready for your review" })),
+        created.map((a) => ({ application_id: a.id, user_id: userId, state: a.state, detail: a.state === "hold" ? "Waiting for your answer" : "Matched. The AI will apply" })),
       );
     }
     return { scored: results.length, created: created?.length ?? 0 };

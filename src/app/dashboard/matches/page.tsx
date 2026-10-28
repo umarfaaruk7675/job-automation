@@ -44,7 +44,7 @@ export default async function MatchesPage() {
         <div>
           <h1 className="text-h2 font-extrabold">Matches</h1>
           <p className="mt-1 max-w-prose text-muted">
-            Every fresh job we scored for you, best first. Jobs at {profile?.match_threshold ?? 80}% or more go to review automatically; you can pull in any other one.
+            Every fresh job we scored for you, best first. Jobs at {profile?.match_threshold ?? 80}% or more are applied to automatically; you can send any other one yourself.
           </p>
         </div>
         <FindMatchesButton />

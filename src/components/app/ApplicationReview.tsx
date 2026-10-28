@@ -21,10 +21,11 @@ type Props = {
   match: { score: number; reasons: string[]; gaps: Gap[]; method: string } | null;
   events: { id: number; state: string; detail: string | null; created_at: string }[];
   aiEnabled: boolean;
+  autoApply: boolean;
 };
 
 export function ApplicationReview(props: Props) {
-  const { id, job, match, events, aiEnabled } = props;
+  const { id, job, match, events, aiEnabled, autoApply } = props;
   const [state, setState] = useState(props.state);
   const [tailored, setTailored] = useState(props.tailored);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +98,7 @@ export function ApplicationReview(props: Props) {
         </m.section>
 
         {state === "hold" && props.holdQuestions.length > 0 && (
-          <ul><HoldCard id={id} title="Before this can go out" company="Answer honestly. A yes adds the skill to your profile." questions={props.holdQuestions} /></ul>
+          <ul><HoldCard id={id} title="The AI needs your answer first" company="Yes adds the skill to your profile and the AI applies. No rejects the job." questions={props.holdQuestions} /></ul>
         )}
 
         <m.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="rounded-panel border border-rule bg-sheet p-5 sm:p-7">
@@ -164,18 +165,25 @@ export function ApplicationReview(props: Props) {
       <aside className="space-y-6 lg:sticky lg:top-24">
         <m.section initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} className="rounded-panel border border-rule bg-sheet p-5">
           <h2 className="font-semibold">Next step</h2>
-          {state === "review" && (
+          {(state === "queued" || state === "review") && (autoApply ? (
             <>
-              <p className="mt-1 text-sm text-muted">Approve to open the company's application page with your tailored resume ready to download. You submit it there.</p>
+              <p className="mt-1 text-sm text-muted">The AI is applying to this job with your tailored resume. We'll email you when it's done.</p>
               <div className="mt-4 flex flex-col gap-2">
-                <Button busy={busy} disabled={closed} onClick={() => { move("approved"); window.open(job.apply_url, "_blank", "noopener"); }}>
-                  Approve and open application <ExternalLink className="h-4 w-4" aria-hidden />
-                </Button>
-                <Button variant="ghost" busy={busy} onClick={() => move("skipped")}><X className="h-4 w-4" aria-hidden /> Skip this job</Button>
+                <Button variant="ghost" busy={busy} onClick={() => move("skipped")}><X className="h-4 w-4" aria-hidden /> Don't apply to this job</Button>
               </div>
             </>
-          )}
-          {state === "hold" && <p className="mt-1 text-sm text-muted">Answer the question on this page first.</p>}
+          ) : (
+            <>
+              <p className="mt-1 text-sm text-muted">This job is lined up. Automatic submitting isn't switched on yet, so finish it on the company's page. Your tailored resume is ready to download.</p>
+              <div className="mt-4 flex flex-col gap-2">
+                <Button busy={busy} disabled={closed} onClick={() => { move("approved"); window.open(job.apply_url, "_blank", "noopener"); }}>
+                  Open application page <ExternalLink className="h-4 w-4" aria-hidden />
+                </Button>
+                <Button variant="ghost" busy={busy} onClick={() => move("skipped")}><X className="h-4 w-4" aria-hidden /> Don't apply to this job</Button>
+              </div>
+            </>
+          ))}
+          {state === "hold" && <p className="mt-1 text-sm text-muted">Answer the question on this page. Approve and the AI applies, reject and it's dropped.</p>}
           {state === "approved" && (
             <>
               <p className="mt-1 text-sm text-muted">Did you submit it on the company's site? Confirming records it and emails you a receipt.</p>
@@ -184,7 +192,7 @@ export function ApplicationReview(props: Props) {
                 <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-control border border-rule font-semibold hover:border-ink">
                   Open the application again <ExternalLink className="h-4 w-4" aria-hidden />
                 </a>
-                <Button variant="ghost" busy={busy} onClick={() => move("review")}>Undo approval</Button>
+                <Button variant="ghost" busy={busy} onClick={() => move("queued")}>Not yet</Button>
               </div>
             </>
           )}
@@ -202,7 +210,7 @@ export function ApplicationReview(props: Props) {
             </>
           )}
           {["skipped", "closed"].includes(state) && (
-            <div className="mt-3"><Button variant="secondary" busy={busy} onClick={() => move("review")}>Move back to review</Button></div>
+            <div className="mt-3"><Button variant="secondary" busy={busy} onClick={() => move("queued")}>Apply to this job after all</Button></div>
           )}
           {error && <p role="alert" className="mt-3 text-sm text-hold">{error}</p>}
         </m.section>

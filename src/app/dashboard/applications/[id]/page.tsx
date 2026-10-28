@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { requireUser } from "@/app/actions/session";
 import { ApplicationReview } from "@/components/app/ApplicationReview";
 import { aiEnabled } from "@/lib/ai/gemini";
+import { autoApplyEnabled } from "@/lib/flags";
 import type { Gap, TailoredResume } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Application | Shortlist" };
@@ -47,6 +48,7 @@ export default async function ApplicationPage({ params }: { params: { id: string
         match={match}
         events={events ?? []}
         aiEnabled={aiEnabled()}
+        autoApply={autoApplyEnabled()}
       />
     </div>
   );
