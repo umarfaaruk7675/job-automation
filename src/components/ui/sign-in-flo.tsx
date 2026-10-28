@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/cn";
 import { safeNext } from "@/lib/safe-next";
 
@@ -139,7 +141,7 @@ function FloatingParticles() {
       for (const d of dots) {
         d.x = (d.x + d.vx + w()) % w();
         d.y = (d.y + d.vy + h()) % h();
-        ctx.fillStyle = `rgba(59, 130, 246, ${d.a})`;
+        ctx.fillStyle = `rgba(185, 138, 106, ${d.a})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         ctx.fill();
@@ -332,6 +334,7 @@ export function Component({
   return (
     <div className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-paper px-4 py-12">
       <FloatingParticles />
+      <ThemeToggle className="absolute right-4 top-4 z-20" />
 
       <m.div
         // Moves in but never starts invisible, because the heading is the LCP element.
@@ -340,14 +343,7 @@ export function Component({
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-md"
       >
-        <Link href="/" className="mb-6 flex items-center justify-center gap-2 text-lg font-extrabold tracking-tight">
-          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-            <path d="M3 3h11l5 5v11H3z" fill="rgb(var(--ink))" />
-            <path d="M14 3v5h5" fill="rgb(var(--paper))" />
-            <path d="M7 12.5l2.6 2.6L15 9.7" fill="none" stroke="rgb(var(--paper))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Shortlist
-        </Link>
+        <Logo className="mb-6 justify-center" />
 
         <div className="rounded-panel border border-rule bg-sheet/90 p-6 shadow-lift backdrop-blur-xl sm:p-8">
           <div className="mb-7 text-center">
@@ -448,17 +444,17 @@ export function Component({
               disabled={submitting}
               whileHover={submitting ? undefined : { y: -1 }}
               whileTap={submitting ? undefined : { scale: 0.98 }}
-              className="group relative h-12 w-full overflow-hidden rounded-control bg-primary font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="group relative h-12 w-full overflow-hidden rounded-control bg-primary font-semibold text-primary-fg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               <span className={cn("transition-opacity", submitting && "opacity-0")}>{copy.submit}</span>
               {submitting && (
                 <span className="absolute inset-0 grid place-items-center" aria-label="Working">
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-paper/30 border-t-paper" />
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary-fg/30 border-t-primary-fg" />
                 </span>
               )}
               <span
                 aria-hidden
-                className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full"
+                className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-primary-fg/15 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full"
               />
             </m.button>
           </form>

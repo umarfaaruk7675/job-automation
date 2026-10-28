@@ -72,7 +72,7 @@ function Row({ it, index, threshold }: { it: JobItem; index: number; threshold: 
             Open <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Link>
         ) : state.matchId ? (
-          <button type="button" onClick={review} disabled={busy} className={`${btn} bg-primary text-white hover:bg-primary-hover`}>
+          <button type="button" onClick={review} disabled={busy} className={`${btn} bg-primary text-primary-fg hover:bg-primary-hover`}>
             {busy ? "Adding…" : (state.score ?? 0) >= threshold ? "Review" : "Review anyway"}
           </button>
         ) : (

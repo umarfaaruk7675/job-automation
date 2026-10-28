@@ -117,7 +117,7 @@ export function ChoiceGroup<T extends string>({
               onClick={() => onChange(multiple ? (on ? value.filter((v) => v !== o.value) : [...value, o.value]) : [o.value])}
               className={cn(
                 "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
-                on ? "border-ink bg-primary text-white" : "border-rule bg-sheet hover:border-ink",
+                on ? "border-ink bg-primary text-primary-fg" : "border-rule bg-sheet hover:border-ink",
               )}
             >
               {o.label}
@@ -169,7 +169,7 @@ export function TagInput({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="inline-flex items-center gap-1 rounded-full bg-paper py-1 pl-3 pr-1 text-sm font-medium"
+              className="inline-flex items-center gap-1 rounded-full bg-sand py-1 pl-3 pr-1 text-sm font-medium"
             >
               {v}
               <button
@@ -260,9 +260,9 @@ export function Button({
       disabled={props.disabled || busy}
       className={cn(
         "relative inline-flex h-11 items-center justify-center gap-2 rounded-control px-5 font-semibold transition-[background-color,border-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60",
-        variant === "primary" && "bg-primary text-white hover:bg-primary-hover",
+        variant === "primary" && "bg-primary text-primary-fg hover:bg-primary-hover",
         variant === "secondary" && "border border-rule bg-sheet hover:border-ink",
-        variant === "ghost" && "text-muted hover:bg-paper hover:text-ink",
+        variant === "ghost" && "text-muted hover:bg-sand hover:text-ink",
         className,
       )}
     >

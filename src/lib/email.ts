@@ -18,12 +18,12 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 export function layout(title: string, body: string) {
   const site = process.env.NEXT_PUBLIC_SITE_URL || "https://job-automation-jet.vercel.app";
-  return `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#16211d">
+  return `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#151515">
   <p style="font-weight:800;font-size:18px">Shortlist</p>
   <h1 style="font-size:20px">${esc(title)}</h1>
   ${body}
-  <p style="margin-top:24px"><a href="${site}/dashboard" style="background:#16211d;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Open your dashboard</a></p>
-  <p style="color:#56655e;font-size:12px;margin-top:24px">You get this because you use Shortlist. Turn these emails off in Settings.</p>
+  <p style="margin-top:24px"><a href="${site}/dashboard" style="background:#151515;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Open your dashboard</a></p>
+  <p style="color:#68645c;font-size:12px;margin-top:24px">You get this because you use Shortlist. Turn these emails off in Settings.</p>
 </div>`;
 }
 

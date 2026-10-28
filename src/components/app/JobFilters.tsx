@@ -32,7 +32,7 @@ export function JobFilters({ initial, roles, sources }: { initial: Filters; role
   }, [f, path, router]);
 
   const pill = (on: boolean) =>
-    cn("rounded-full border px-3.5 py-2 text-sm font-semibold transition-colors", on ? "border-primary bg-primary/15 text-[rgb(147,197,253)]" : "border-rule bg-sheet text-muted hover:border-ink hover:text-ink");
+    cn("rounded-full border px-3.5 py-2 text-sm font-semibold transition-colors", on ? "border-clay bg-clay-soft text-clay-ink" : "border-rule bg-sheet text-muted hover:border-ink hover:text-ink");
 
   return (
     <div className="space-y-3 rounded-panel border border-rule bg-sheet/60 p-4">

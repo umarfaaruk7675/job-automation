@@ -122,7 +122,7 @@ export function ApplicationReview(props: Props) {
             {tailoring ? (
               <m.div key="busy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mt-5 space-y-2">
                 {[0, 1, 2, 3].map((i) => (
-                  <m.div key={i} className="h-3 rounded-full bg-paper" style={{ width: `${90 - i * 12}%` }} animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }} />
+                  <m.div key={i} className="h-3 rounded-full bg-sand" style={{ width: `${90 - i * 12}%` }} animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }} />
                 ))}
               </m.div>
             ) : tailored ? (
@@ -141,7 +141,7 @@ export function ApplicationReview(props: Props) {
                   <p className="text-sm font-semibold text-muted">Skills, most relevant first</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {tailored.skills.map((s, i) => (
-                      <span key={s} className={cn("rounded-full px-2.5 py-1 text-sm", i < 6 ? "bg-primary text-white" : "bg-paper")}>{s}</span>
+                      <span key={s} className={cn("rounded-full px-2.5 py-1 text-sm", i < 6 ? "bg-primary text-primary-fg" : "bg-sand")}>{s}</span>
                     ))}
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export function ApplicationReview(props: Props) {
               <div className="mt-4 grid grid-cols-3 gap-2">
                 {(["interview", "offer", "rejected"] as const).map((s) => (
                   <button key={s} type="button" disabled={busy} onClick={() => move(s)}
-                    className={cn("rounded-control border px-2 py-2 text-sm font-semibold transition-colors", state === s ? "border-ink bg-primary text-white" : "border-rule hover:border-ink")}>
+                    className={cn("rounded-control border px-2 py-2 text-sm font-semibold transition-colors", state === s ? "border-ink bg-primary text-primary-fg" : "border-rule hover:border-ink")}>
                     {s === "interview" ? "Interview" : s === "offer" ? "Offer" : "No luck"}
                   </button>
                 ))}

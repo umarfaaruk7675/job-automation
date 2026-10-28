@@ -1,9 +1,9 @@
 import type { Config } from "tailwindcss";
 
 /*
- * Design tokens for Shortlist (working name). Dark navy surfaces, one blue
- * for actions, green for "sent" and amber for "needs you", so colour always
- * carries meaning. Matches the look of the StudyBuddy AI app.
+ * Design tokens for Shortlist (working name). Warm cream (and dark brown) surfaces, black actions, clay accent, green for
+ * "applied" and amber for "needs you", so colour always carries meaning.
+ * Matches the landing page.
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
@@ -15,13 +15,15 @@ const config: Config = {
         ink: "rgb(var(--ink) / <alpha-value>)", // primary text and primary buttons
         muted: "rgb(var(--muted) / <alpha-value>)", // secondary text
         rule: "rgb(var(--rule) / <alpha-value>)", // borders and dividers
-        primary: { DEFAULT: "rgb(var(--primary) / <alpha-value>)", hover: "rgb(var(--primary-hover) / <alpha-value>)" }, // actions
+        sand: "rgb(var(--sand) / <alpha-value>)", // soft panels
+        clay: { DEFAULT: "rgb(var(--clay) / <alpha-value>)", ink: "rgb(var(--clay-ink) / <alpha-value>)", soft: "rgb(var(--clay-soft) / <alpha-value>)" }, // accent
+        primary: { DEFAULT: "rgb(var(--primary) / <alpha-value>)", hover: "rgb(var(--primary-hover) / <alpha-value>)", fg: "rgb(var(--primary-fg) / <alpha-value>)" }, // actions
         glow: "rgb(var(--glow) / <alpha-value>)", // card highlights
         sent: { DEFAULT: "rgb(var(--sent) / <alpha-value>)", soft: "rgb(var(--sent-soft) / <alpha-value>)" }, // submitted, approved
-        hold: { DEFAULT: "rgb(var(--hold) / <alpha-value>)", soft: "rgb(var(--hold-soft) / <alpha-value>)" }, // waiting for the user
+        hold: { DEFAULT: "rgb(var(--hold) / <alpha-value>)", soft: "rgb(var(--hold-soft) / <alpha-value>)", line: "rgb(var(--hold-line) / <alpha-value>)" }, // waiting for the user
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        sans: ["'Plus Jakarta Sans Variable'", "system-ui", "sans-serif"],
       },
       fontSize: {
         // Modular scale, ratio ~1.25 from a 17px body.
@@ -41,8 +43,8 @@ const config: Config = {
         panel: "1rem",
       },
       boxShadow: {
-        lift: "0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -20px rgb(0 0 0 / 0.7)",
-        glow: "0 0 0 1px rgb(var(--glow) / 0.35), 0 10px 40px -10px rgb(var(--glow) / 0.45)",
+        lift: "0 18px 40px -22px rgb(94 64 34 / 0.35)",
+        glow: "0 0 0 1px rgb(var(--glow) / 0.35), 0 14px 40px -14px rgb(var(--glow) / 0.5)",
       },
     },
   },

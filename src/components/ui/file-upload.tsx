@@ -134,7 +134,7 @@ export default function FileUpload({ onReady, maxBytes = 5 * 1024 * 1024, classN
             transition={{ duration: 1.4, repeat: dragging ? Infinity : 0, ease: "easeInOut" }}
             className={cn(
               "grid h-14 w-14 place-items-center rounded-full transition-colors",
-              dragging ? "bg-sheet text-sent" : "bg-paper text-ink group-hover:text-sent",
+              dragging ? "bg-sheet text-sent" : "bg-sand text-ink group-hover:text-sent",
             )}
             aria-hidden
           >
@@ -198,7 +198,7 @@ export default function FileUpload({ onReady, maxBytes = 5 * 1024 * 1024, classN
                       <Loader className="h-4 w-4 animate-spin text-muted" aria-hidden />
                       Checking file type and size
                     </p>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-paper">
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sand">
                       <m.div
                         className="h-full rounded-full bg-primary"
                         initial={{ width: "8%" }}
@@ -226,7 +226,7 @@ export default function FileUpload({ onReady, maxBytes = 5 * 1024 * 1024, classN
                   onClick={remove}
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.92 }}
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-control text-muted transition-colors hover:bg-paper hover:text-ink"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-control text-muted transition-colors hover:bg-sand hover:text-ink"
                   aria-label={`Remove ${resume.name}`}
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />

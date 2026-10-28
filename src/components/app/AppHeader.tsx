@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { m } from "framer-motion";
 import { Briefcase, LayoutDashboard, LogOut, Search, Settings, Sparkles, UserRound } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Logo } from "@/components/ui/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV = [
   { href: "/dashboard", label: "Overview", short: "Home", icon: LayoutDashboard },
@@ -20,36 +22,30 @@ export function AppHeader({ name, email, showNav = false }: { name: string; emai
   const active = (href: string) => (href === "/dashboard" ? path === href : path.startsWith(href));
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-rule bg-paper/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-page items-center justify-between gap-4 px-4 sm:px-6">
-          <Link href={showNav ? "/dashboard" : "/"} className="flex items-center gap-2 text-lg font-extrabold tracking-tight">
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden className="shrink-0">
-              <path d="M3 3h11l5 5v11H3z" fill="rgb(var(--ink))" />
-              <path d="M14 3v5h5" fill="rgb(var(--paper))" />
-              <path d="M7 12.5l2.6 2.6L15 9.7" fill="none" stroke="rgb(var(--paper))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Shortlist
-          </Link>
+      <header className="sticky top-3 z-40 px-3 sm:px-4">
+        <div className="mx-auto flex max-w-page items-center justify-between gap-3 rounded-full border border-rule bg-paper/85 py-2 pl-4 pr-2 shadow-[0_12px_34px_-16px_rgb(94_64_34/0.3)] backdrop-blur-xl sm:pl-5">
+          <Logo href={showNav ? "/dashboard" : "/"} />
 
           {showNav && (
             <nav aria-label="App" className="hidden items-center gap-1 lg:flex">
               {NAV.map((n) => (
                 <Link key={n.href} href={n.href} prefetch aria-current={active(n.href) ? "page" : undefined}
-                  className={cn("relative rounded-control px-3 py-2 text-sm font-semibold transition-colors", active(n.href) ? "text-ink" : "text-muted hover:text-ink")}>
-                  {active(n.href) && <m.span layoutId="nav-pill" className="absolute inset-0 rounded-control bg-sheet shadow-[0_0_0_1px_rgb(var(--rule))]" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                  className={cn("relative rounded-full px-3.5 py-2 text-sm font-semibold transition-colors", active(n.href) ? "text-ink" : "text-muted hover:text-ink")}>
+                  {active(n.href) && <m.span layoutId="nav-pill" className="absolute inset-0 rounded-full bg-sand shadow-[0_0_0_1px_rgb(var(--rule))]" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                   <span className="relative">{n.label}</span>
                 </Link>
               ))}
             </nav>
           )}
 
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="hidden min-w-0 text-right sm:block">
-              <p className="max-w-[14rem] truncate text-sm font-semibold">{name}</p>
-              <p className="max-w-[14rem] truncate text-xs text-muted">{email}</p>
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="hidden min-w-0 text-right xl:block">
+              <p className="max-w-[12rem] truncate text-sm font-semibold leading-tight">{name}</p>
+              <p className="max-w-[12rem] truncate text-xs text-muted">{email}</p>
             </div>
+            <ThemeToggle />
             <form action="/auth/signout" method="post">
-              <button type="submit" className="inline-flex h-10 items-center gap-2 rounded-control border border-rule bg-sheet px-3 text-sm font-semibold transition-colors hover:border-ink">
+              <button type="submit" className="inline-flex h-10 items-center gap-2 rounded-full border border-rule bg-sheet px-4 text-sm font-semibold transition-colors hover:bg-sand">
                 <LogOut className="h-4 w-4" aria-hidden />
                 <span className="hidden sm:inline">Sign out</span>
               </button>

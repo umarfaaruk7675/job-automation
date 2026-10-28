@@ -41,7 +41,7 @@ function Row({ it, index, threshold }: { it: MatchItem; index: number; threshold
       ) : (
         <button type="button" disabled={busy}
           onClick={() => start(async () => { const r = await reviewMatch(it.id); if (r.ok && r.applicationId) setAppId(r.applicationId); })}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-control bg-primary px-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60">
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-control bg-primary px-3 text-sm font-semibold text-primary-fg transition-colors hover:bg-primary-hover disabled:opacity-60">
           {busy ? "Adding…" : it.score >= threshold ? "Review" : "Review anyway"}
         </button>
       )}

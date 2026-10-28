@@ -38,7 +38,7 @@ export function HoldCard({ id, title, company, questions }: { id: number; title:
           <m.div key={q.skill} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-3">
             <p className="text-sm">{q.question}</p>
             <div className="mt-2.5 flex gap-2">
-              <button type="button" disabled={busy} onClick={() => answer(true)} className="rounded-control bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-transform active:scale-95 disabled:opacity-60">
+              <button type="button" disabled={busy} onClick={() => answer(true)} className="rounded-control bg-primary px-3 py-1.5 text-sm font-semibold text-primary-fg transition-transform active:scale-95 disabled:opacity-60">
                 Yes, add it
               </button>
               <button type="button" disabled={busy} onClick={() => answer(false)} className="rounded-control border border-hold/40 bg-sheet/60 px-3 py-1.5 text-sm font-semibold transition-transform active:scale-95 disabled:opacity-60">

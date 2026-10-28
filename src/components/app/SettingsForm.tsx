@@ -53,7 +53,7 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
             const locked = v === "autopilot" && !unlocked;
             return (
               <button key={v} type="button" disabled={locked} aria-pressed={mode === v} onClick={() => setMode(v)}
-                className={cn("rounded-control border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60", mode === v ? "border-ink bg-paper" : "border-rule hover:border-ink")}>
+                className={cn("rounded-control border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60", mode === v ? "border-ink bg-sand" : "border-rule hover:border-ink")}>
                 <p className="flex items-center gap-1.5 font-semibold">{locked && <Lock className="h-3.5 w-3.5" aria-hidden />}{v === "review" ? "Review each one" : "Autopilot"}</p>
                 <p className="mt-1 text-sm text-muted">
                   {v === "review" ? "You approve every application." : unlocked ? "Applications at your bar with no questions go out within your daily limit." : `Unlocks after 10 approvals. You have ${approvedCount}.`}
@@ -99,7 +99,7 @@ export function SettingsForm({ profile, approvedCount, followed: initialFollowed
           <Button type="submit" variant="secondary" busy={following}>Follow</Button>
         </form>
         {followMsg && <p className="mt-2 text-sm text-muted">{followMsg}</p>}
-        {followed.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{followed.map((n) => <span key={n} className="rounded-full bg-paper px-3 py-1 text-sm font-medium">{n}</span>)}</div>}
+        {followed.length > 0 && <div className="mt-3 flex flex-wrap gap-2">{followed.map((n) => <span key={n} className="rounded-full bg-sand px-3 py-1 text-sm font-medium">{n}</span>)}</div>}
       </section>
     </div>
   );

@@ -1,28 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
+import "@fontsource-variable/plus-jakarta-sans";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import "./globals.css";
 
-const sans = localFont({
-  src: "./fonts/inter.woff2",
-  variable: "--font-sans",
-  weight: "100 900",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Shortlist: job applications you'd sign your name to",
+  title: "Shortlist: AI that applies to jobs for you",
   description:
-    "Fresh jobs from company career pages, a resume tailored to each one, and nothing sent without your approval.",
+    "Shortlist finds jobs on official career pages worldwide, scores each one against your profile, tailors your resume using only what is true, and applies for you. If information is missing, it pauses and waits for your answer.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b1120",
+  themeColor: "#fdfcf8",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={sans.variable}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Applies the saved theme before first paint so there is no flash. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("sl-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}` }} />
+      </head>
       <body>
         <MotionProvider>{children}</MotionProvider>
       </body>

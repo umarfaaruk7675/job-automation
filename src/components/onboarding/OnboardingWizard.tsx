@@ -325,7 +325,7 @@ function Working({ phase }: { phase: "uploading" | "reading" }) {
           </m.li>
         ))}
       </ul>
-      <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-paper">
+      <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-sand">
         <m.div className="h-full w-1/3 rounded-full bg-primary" animate={{ x: ["-100%", "300%"] }} transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }} />
       </div>
     </div>
@@ -373,7 +373,7 @@ function ExperienceStep({ p, set, r, setR }: { p: Profile; set: (x: Partial<Prof
               <div className="mb-4 flex items-center justify-between">
                 <p className="font-semibold">{e.title || "New role"}{e.company ? `, ${e.company}` : ""}</p>
                 <button type="button" onClick={() => setR({ experience: r.experience.filter((_, j) => j !== i) })}
-                  className="grid h-9 w-9 place-items-center rounded-control text-muted hover:bg-paper hover:text-ink" aria-label={`Remove ${e.title || "this role"}`}>
+                  className="grid h-9 w-9 place-items-center rounded-control text-muted hover:bg-sand hover:text-ink" aria-label={`Remove ${e.title || "this role"}`}>
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>
               </div>
@@ -590,7 +590,7 @@ function ReviewStep({ p, r, onEdit }: { p: Profile; r: ResumeData; onEdit: (step
                 <p key={l} className="mt-1 break-words text-muted">{l}</p>
               ))}
             </div>
-            <button type="button" onClick={() => onEdit(row.step)} className="inline-flex shrink-0 items-center gap-1.5 rounded-control px-2.5 py-1.5 text-sm font-semibold hover:bg-paper">
+            <button type="button" onClick={() => onEdit(row.step)} className="inline-flex shrink-0 items-center gap-1.5 rounded-control px-2.5 py-1.5 text-sm font-semibold hover:bg-sand">
               <Pencil className="h-3.5 w-3.5" aria-hidden /> Edit
             </button>
           </m.div>

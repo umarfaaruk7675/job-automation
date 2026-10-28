@@ -14,8 +14,8 @@ export function StateChip({ state }: { state: string }) {
         "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold",
         tone === "sent" && "bg-sent-soft text-sent",
         tone === "hold" && "bg-hold-soft text-hold",
-        tone === "ink" && "bg-primary/15 text-[rgb(147,197,253)]",
-        tone === "neutral" && "bg-paper text-muted",
+        tone === "ink" && "bg-clay-soft text-clay-ink",
+        tone === "neutral" && "bg-sand text-muted",
       )}
     >
       {tone === "hold" && <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />}
@@ -30,13 +30,13 @@ export function ScoreRing({ score, size = 52 }: { score: number; size?: number }
   return (
     <span className="relative inline-grid shrink-0 place-items-center" style={{ width: size, height: size }} aria-label={`${score}% match`}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--rule))" strokeWidth="5" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--track))" strokeWidth="5" />
         <m.circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={score >= 80 ? "rgb(var(--sent))" : "rgb(var(--primary))"}
+          stroke={score >= 80 ? "rgb(var(--sent))" : "rgb(var(--clay))"}
           strokeWidth="5"
           strokeLinecap="round"
           strokeDasharray={c}
