@@ -4,6 +4,7 @@ import { discoverJobs, seedCompanies } from "@/lib/jobs/discover";
 import { matchUser } from "@/lib/matching";
 import { esc, layout, sendEmail } from "@/lib/email";
 import { generateJson, lastAiError } from "@/lib/ai/gemini";
+import { secretsMatch } from "@/lib/secret";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,9 +17,10 @@ export const fetchCache = "force-no-store";
  */
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  const auth = request.headers.get("authorization");
-  const key = request.nextUrl.searchParams.get("key"); // for a manual run from the browser
-  if (!secret || (auth !== `Bearer ${secret}` && key !== secret)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Header only: a secret in the URL ends up in logs and browser history.
+  const auth = request.headers.get("authorization") ?? "";
+  const given = auth.startsWith("Bearer ") ? auth.slice(7) : null;
+  if (!secretsMatch(given, secret)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const db = createAdminClient();
   if (!db) return NextResponse.json({ error: "SUPABASE_SECRET_KEY is not set" }, { status: 500 });
@@ -62,17 +64,17 @@ export async function GET(request: NextRequest) {
       .from("applications")
       .select("state, jobs(title, companies(name))")
       .eq("user_id", u.id)
-      .in("state", ["review", "hold"])
+      .in("state", ["queued", "review", "hold"])
       .order("created_at", { ascending: false })
       .limit(10);
     if (waiting?.length) {
       const items = waiting
         .map((a) => {
           const j = a.jobs as unknown as { title: string; companies: { name: string } | null };
-          return `<li>${esc(j.title)} at ${esc(j.companies?.name ?? "")}${a.state === "hold" ? " <b>(needs your answer)</b>" : ""}</li>`;
+          return `<li>${esc(j.title)} at ${esc(j.companies?.name ?? "")}${a.state === "hold" ? " <b>(needs your answer)</b>" : " (the AI is applying)"}</li>`;
         })
         .join("");
-      if (await sendEmail(u.email, `${waiting.length} job${waiting.length > 1 ? "s" : ""} waiting for you`, layout("Jobs waiting for your review", `<ul>${items}</ul>`))) emailed++;
+      if (await sendEmail(u.email, `${waiting.length} job${waiting.length > 1 ? "s" : ""} in progress`, layout("Your applications today", `<ul>${items}</ul>`))) emailed++;
     }
   }
 

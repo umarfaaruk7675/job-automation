@@ -1,9 +1,10 @@
 export const STATE_LABEL: Record<string, string> = {
-  review: "Ready for review",
+  queued: "Applying",
+  review: "Applying",
   hold: "Needs your answer",
-  approved: "Approved, finish on site",
+  approved: "Finish on site",
   applied: "Applied",
-  skipped: "Skipped",
+  skipped: "Rejected by you",
   rejected: "Not selected",
   interview: "Interview",
   offer: "Offer",
@@ -13,6 +14,7 @@ export const STATE_LABEL: Record<string, string> = {
 export type Tone = "neutral" | "sent" | "hold" | "ink";
 
 export const STATE_TONE: Record<string, Tone> = {
+  queued: "ink",
   review: "ink",
   hold: "hold",
   approved: "ink",

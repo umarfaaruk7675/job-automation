@@ -29,7 +29,7 @@ export const site = {
   ],
   steps: [
     { title: "Add your resume", body: "We read it and build a profile you check and correct in a few minutes." },
-    { title: "Review your matches", body: "Each morning, jobs above your match bar wait for you with reasons and any questions." },
+    { title: "The AI applies", body: "Jobs above your match bar are applied to automatically. If something is missing, the job waits for your yes or no." },
     { title: "Approve and apply", body: "Download the tailored resume, apply on the company's page, and we track the rest." },
   ],
   faq: [
