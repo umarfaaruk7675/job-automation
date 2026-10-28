@@ -11,14 +11,14 @@ const FAILURES_BEFORE_OFF = 3;
 type Company = { id: number; name: string; ats: Ats; slug: string; payload_hash: string | null; failure_count: number };
 export type Report = { boards: number; unchanged: number; upserted: number; closed: number; feeds: Record<string, number | string>; failed: string[] };
 
-const sha1 = (s: string) => createHash("sha1").update(s).digest("hex");
-const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "unknown";
-const fresh = <T extends NormalizedJob>(jobs: T[]) => {
+export const sha1 = (s: string) => createHash("sha1").update(s).digest("hex");
+export const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "unknown";
+export const fresh = <T extends NormalizedJob>(jobs: T[]) => {
   const cutoff = Date.now() - KEEP_DAYS * 864e5;
   return jobs.filter((j) => j.apply_url && j.title && (!j.posted_at || Date.parse(j.posted_at) >= cutoff));
 };
 
-function toRow(companyId: number, source: string, j: NormalizedJob, now: string) {
+export function toRow(companyId: number, source: string, j: NormalizedJob, now: string) {
   return {
     company_id: companyId,
     source,

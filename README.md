@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Tests
+
+Unit tests use [Vitest](https://vitest.dev) and live in `test/`. They never call real services: `fetch` is mocked for job boards, Gemini and Resend, and `test/fake-db.ts` stands in for Supabase.
+
+```bash
+npm test               # run once
+npm run test:watch     # re-run on save
+npm run test:coverage  # with a coverage report in coverage/
+```
+
+What's covered: job matching filters and scoring, every job board and feed parser, the crawler (failure switch-off, unchanged boards, closing vanished jobs), the Gemini client, resume parsing, truthful tailoring, email escaping and safe sign-in redirects.

@@ -18,6 +18,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { safeNext } from "@/lib/safe-next";
 
 type Mode = "signup" | "signin";
 
@@ -481,6 +482,3 @@ export function Component({
 }
 
 // Only allow redirects to paths on this site.
-function safeNext(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
-}

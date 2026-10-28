@@ -183,7 +183,7 @@ export function detectBoard(input: string): { ats: Ats; slug: string } | null {
   const host = url.hostname.toLowerCase();
   const first = url.pathname.split("/").filter(Boolean)[0];
   const forParam = url.searchParams.get("for");
-  if (host.endsWith("greenhouse.io") && (first || forParam)) {
+  if ((host === "greenhouse.io" || host.endsWith(".greenhouse.io")) && (first || forParam)) {
     const slug = forParam ?? first!;
     if (slug !== "embed") return { ats: "greenhouse", slug: slug.toLowerCase() };
   }

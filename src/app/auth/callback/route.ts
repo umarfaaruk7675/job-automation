@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/safe-next";
 
 /** Finishes Google, LinkedIn and GitHub sign-in and email confirmation links. */
 export async function GET(request: NextRequest) {
@@ -24,9 +25,4 @@ export async function GET(request: NextRequest) {
 
   const message = searchParams.get("error_description") ?? "That sign-in link didn't work. Try signing in again.";
   return NextResponse.redirect(`${origin}/signin?error=${encodeURIComponent(message)}`);
-}
-
-// Only allow redirects to paths on this site.
-function safeNext(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
 }
